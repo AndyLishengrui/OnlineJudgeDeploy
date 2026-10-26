@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script>
+  // 域名守卫（2026-10-26）：www → apex 已做 301。老标签页 / 浏览器 bfcache 回退可能还停在 www 上，
+  // 那种页面里的 API 请求会被 301 跨域到 apex，fetch 必然失败（成绩传不上、排行榜空白）。
+  // 所以只要发现自己在旧域名上，立刻跳走；apex 上这段不执行。
+  if (location.hostname === 'www.xmuoj.com') {
+    location.replace('https://xmuoj.com' + location.pathname + location.search + location.hash);
+  }
+</script>
+<title>PixelTyper · 像素代码打字训练营</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><rect width='16' height='16' fill='%231D2B53'/><rect x='4' y='4' width='8' height='8' fill='%23FFEC27'/></svg>">
+<link rel="stylesheet" href="fonts/fusion/index.css">
+<link rel="stylesheet" href="fonts/ps2p/ps2p.css">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div id="crt-overlay"></div>
+<div id="app">
+
+  <!-- ══════════ 标题画面 ══════════ -->
+  <section id="screen-boot" class="screen active">
+    <div class="boot-inner">
+      <canvas id="logo-heroes" class="pixel-canvas"></canvas>
+      <h1 class="game-logo"><span class="logo-pixel">PIXEL</span><span class="logo-typer">TYPER</span></h1>
+      <p class="game-sub">像素代码打字训练营</p>
+      <p id="boot-story" class="boot-story"></p>
+      <p class="press-start blink" id="press-start">▶ PRESS START · 按任意键开始 ◀</p>
+      <p class="boot-tip" id="boot-tip"></p>
+    </div>
+  </section>
+
+  <!-- ══════════ 世界地图 ══════════ -->
+  <section id="screen-map" class="screen">
+    <header class="topbar">
+      <span class="topbar-title">◆ 世界地图</span>
+      <span class="player-chip" id="map-player-chip"></span>
+      <span class="topbar-btns">
+        <span class="player-chip oj-chip" id="oj-chip" title="xmuoj 登录状态">…</span>
+        <button class="px-btn small" id="btn-goto-board">🏆 排行榜</button>
+        <button class="px-btn small hidden" id="btn-goto-admin">🛠 管理</button>
+        <button class="px-btn small" id="btn-goto-daily">每日挑战</button>
+        <button class="px-btn small" id="btn-goto-drills">训练营</button>
+        <button class="px-btn small" id="btn-goto-profile">修炼小屋</button>
+        <button class="px-btn small" id="btn-sound">音效:开</button>
+      </span>
+    </header>
+    <div class="map-path" id="map-path"></div>
+    <p class="map-hint">四大模块分开闯关：指法练习 · 大模型实战 · Python 关卡 · C++ 关卡 —— 每种语言各自击败 Boss 解锁下一关</p>
+  </section>
+
+  <!-- ══════════ 关卡选择 ══════════ -->
+  <section id="screen-stage" class="screen">
+    <header class="topbar">
+      <button class="px-btn small" id="btn-stage-back">◀ 回地图</button>
+      <span class="topbar-title" id="stage-title"></span>
+      <span class="player-chip" id="stage-player-chip"></span>
+    </header>
+    <p class="stage-desc" id="stage-desc"></p>
+    <div id="finger-map" class="finger-map hidden"></div>
+    <div class="level-grid" id="level-grid"></div>
+  </section>
+
+  <!-- ══════════ 打字战场 ══════════ -->
+  <section id="screen-game" class="screen">
+    <header class="topbar">
+      <button class="px-btn small" id="btn-quit-level">◀ 撤退</button>
+      <span class="topbar-title" id="game-title"></span>
+      <span class="game-timer" id="game-timer">0.0s</span>
+      <span class="font-btns">
+        <button class="px-btn small" id="btn-font-dec" title="代码字体缩小">A-</button>
+        <button class="px-btn small" id="btn-font-inc" title="代码字体放大">A+</button>
+      </span>
+    </header>
+
+    <div id="boss-bar-wrap" class="boss-bar-wrap hidden">
+      <canvas id="boss-sprite" class="pixel-canvas boss-canvas" width="16" height="16"></canvas>
+      <div class="boss-info">
+        <div class="boss-name" id="boss-name"></div>
+        <div class="hp-bar boss-hp"><div class="hp-fill" id="boss-hp-fill"></div></div>
+      </div>
+      <div class="player-hp-wrap">
+        <span class="hp-label">YOU</span>
+        <div class="hp-bar player-hp"><div class="hp-fill" id="player-hp-fill"></div></div>
+      </div>
+    </div>
+
+    <div class="game-hud">
+      <div class="hud-cell"><span class="hud-label">WPM</span><span class="hud-value" id="hud-wpm">0</span></div>
+      <div class="hud-cell"><span class="hud-label">准确率</span><span class="hud-value" id="hud-acc">100%</span></div>
+      <div class="hud-cell"><span class="hud-label">连击</span><span class="hud-value combo" id="hud-combo">0</span></div>
+      <div class="hud-cell"><span class="hud-label">进度</span><span class="hud-value" id="hud-prog">0%</span></div>
+      <div class="hud-cell" id="hud-best-cell"><span class="hud-label">本关最佳</span><span class="hud-value" id="hud-best">—</span></div>
+    </div>
+
+    <div class="code-frame">
+      <div class="code-panel" id="code-panel" tabindex="0"></div>
+      <div class="progress-track"><div class="progress-fill" id="progress-fill"></div></div>
+    </div>
+
+    <div class="game-bottom">
+      <canvas id="mascot" class="pixel-canvas mascot-canvas"></canvas>
+      <canvas id="mascot-vera" class="pixel-canvas mascot-canvas hidden"></canvas>
+      <p class="mascot-line" id="mascot-line">准备好了吗？敲下第一个字符开始！</p>
+    </div>
+
+    <!-- 打完停留复盘面板：代码保持可见，战绩速览，Enter 才进结算 -->
+    <div id="review-panel" class="review-panel hidden">
+      <div class="review-title" id="review-title"></div>
+      <div class="review-stats" id="review-stats"></div>
+      <div class="review-btns">
+        <button class="px-btn" id="btn-review-result">📊 查看结算 <kbd>Enter</kbd></button>
+        <button class="px-btn" id="btn-review-retry">↻ 再来一次 <kbd>R</kbd></button>
+        <button class="px-btn" id="btn-review-back">◆ 返回关卡 <kbd>Esc</kbd></button>
+      </div>
+    </div>
+
+    <div id="ime-warning" class="ime-warning hidden">⚠ 检测到中文输入法<br>请切换为英文输入法 (Shift / Ctrl+Space)</div>
+    <div id="shake-anchor"></div>
+  </section>
+
+  <!-- ══════════ 结算画面 ══════════ -->
+  <section id="screen-result" class="screen">
+    <div class="result-panel">
+      <h2 id="result-title" class="result-title">VICTORY!</h2>
+      <div class="result-stars" id="result-stars"></div>
+      <div class="result-stats" id="result-stats"></div>
+      <div class="xp-wrap">
+        <span class="xp-label" id="xp-label">XP +0</span>
+        <div class="xp-bar"><div class="xp-fill" id="xp-fill"></div></div>
+      </div>
+      <div class="weak-keys" id="weak-keys"></div>
+      <div class="upload-note" id="upload-note"></div>
+      <div class="result-btns">
+        <button class="px-btn" id="btn-retry">↻ 再来一次</button>
+        <button class="px-btn" id="btn-next">▶ 下一关</button>
+        <button class="px-btn" id="btn-result-map">◆ 回地图</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════ 修炼小屋（档案） ══════════ -->
+  <section id="screen-profile" class="screen">
+    <header class="topbar">
+      <button class="px-btn small" id="btn-profile-back">◀ 回地图</button>
+      <span class="topbar-title">◆ 修炼小屋</span>
+      <span class="player-chip" id="profile-player-chip"></span>
+    </header>
+    <div class="profile-grid">
+      <div class="profile-card">
+        <h3 class="card-title">勇者档案</h3>
+        <div id="profile-summary"></div>
+        <h3 class="card-title">WPM 修炼曲线</h3>
+        <canvas id="wpm-chart" width="560" height="160"></canvas>
+      </div>
+      <div class="profile-card">
+        <h3 class="card-title">按键热力图 <span class="card-sub">红 = 易错 · 慢</span></h3>
+        <div id="key-heatmap"></div>
+      </div>
+      <div class="profile-card">
+        <h3 class="card-title">成就徽章</h3>
+        <div class="achv-grid" id="achv-grid"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════ 排行榜 ══════════ -->
+  <section id="screen-board" class="screen">
+    <header class="topbar">
+      <button class="px-btn small" id="btn-board-back">◀ 回地图</button>
+      <span class="topbar-title">◆ 英雄排行榜</span>
+      <span class="topbar-btns">
+        <button class="px-btn small board-tab active" id="tab-board-overall">总榜</button>
+        <button class="px-btn small board-tab" id="tab-board-snippet">单关榜</button>
+      </span>
+    </header>
+    <p class="stage-desc" id="board-desc">全班同场竞技 · 排名口径：总星数 → 战功 XP（不含 Boss/每日加成）→ 平均准确率</p>
+    <div id="board-snippet-bar" class="board-snippet-bar hidden">
+      <select id="board-snippet-select" class="px-select"></select>
+    </div>
+    <div class="board-wrap px-border" id="board-wrap">
+      <table class="board-table" id="board-table"></table>
+      <p class="board-empty hidden" id="board-empty">还没有成绩——第一个上榜的就是你！</p>
+    </div>
+    <p class="map-hint" id="board-me-line"></p>
+  </section>
+
+  <!-- ══════════ 管理员 · 自定义关卡 ══════════ -->
+  <section id="screen-admin" class="screen">
+    <header class="topbar">
+      <button class="px-btn small" id="btn-admin-back">◀ 回地图</button>
+      <span class="topbar-title">◆ 关卡管理（管理员）</span>
+      <span class="topbar-btns">
+        <button class="px-btn small" id="btn-admin-new">＋ 新建关卡包</button>
+      </span>
+    </header>
+    <div class="admin-grid">
+      <div class="profile-card">
+        <h3 class="card-title">已发布关卡包</h3>
+        <div id="admin-pack-list" class="admin-pack-list"></div>
+      </div>
+      <div class="profile-card">
+        <h3 class="card-title" id="admin-editor-title">编辑器</h3>
+        <div class="admin-form">
+          <label>包名称<input id="admin-name" class="px-input" maxlength="40" placeholder="例：第 3 周·循环专项"></label>
+          <label>说明<input id="admin-desc" class="px-input" maxlength="200" placeholder="给学生看的一句话"></label>
+          <label>关卡 JSON（snippets 数组）
+            <textarea id="admin-json" class="px-input admin-json" spellcheck="false"
+              placeholder='[{"title":"输出练习","tier":1,"lang":"py","hint":"注意引号","code":"print(1)"}]'></textarea>
+          </label>
+          <div class="admin-btns">
+            <button class="px-btn small" id="btn-admin-validate">✔ 校验</button>
+            <button class="px-btn small" id="btn-admin-save">💾 保存发布</button>
+            <button class="px-btn small hidden" id="btn-admin-delete">🗑 删除此包</button>
+          </div>
+          <p id="admin-msg" class="admin-msg"></p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 成就弹窗 -->
+  <div id="achv-toast" class="achv-toast hidden">
+    <div class="achv-toast-inner">
+      <span class="achv-icon">🏅</span>
+      <div><div class="achv-toast-title" id="achv-toast-name"></div><div class="achv-toast-desc" id="achv-toast-desc"></div></div>
+    </div>
+  </div>
+
+</div>
+
+<script src="js/pixelart.js"></script>
+<script src="js/sfx.js"></script>
+<script src="js/storage.js"></script>
+<script src="js/engine.js"></script>
+<script src="js/api.js"></script>
+<script src="data/flavor.js"></script>
+<script src="data/snippets.js"></script>
+<script src="data/llm.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>

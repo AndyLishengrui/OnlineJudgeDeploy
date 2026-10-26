@@ -1,1 +1,6 @@
 data/
+
+# PixelTyper 前端数据必须随源码入库（上面 data/ 规则会误伤；只放行这一处，
+# pixeltyper-api/data/ 里的 SQLite 数据库仍然忽略）
+!PixelTyper/data/
+!PixelTyper/data/**

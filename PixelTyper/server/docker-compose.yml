@@ -1,0 +1,24 @@
+version: "3.3"
+
+services:
+  pixeltyper-api:
+    build: .
+    image: pixeltyper-api:latest
+    container_name: pixeltyper-api
+    restart: unless-stopped
+    environment:
+      PT_OJ_PROFILE_URL: http://oj-backend:8000/api/profile
+      PT_DB_PATH: /data/pixeltyper.db
+    volumes:
+      - ./data:/data
+    networks:
+      - onlinejudgedeploy_default
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request;urllib.request.urlopen('http://127.0.0.1:9100/ping',timeout=3)"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+networks:
+  onlinejudgedeploy_default:
+    external: true
