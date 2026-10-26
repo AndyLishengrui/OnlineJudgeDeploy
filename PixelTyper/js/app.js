@@ -961,11 +961,12 @@
       const rows = res.rows || [];
       if (!rows.length) empty.classList.remove('hidden');
       table.innerHTML =
-        `<tr><th>#</th><th>勇者</th><th>总星数</th><th>战功XP</th><th>通关数</th><th>平均准确率</th></tr>` +
+        // 管理员多一列真名（real_name 只有管理员请求时后端才下发）
+        `<tr><th>#</th><th>勇者</th>${oj.admin ? '<th>姓名</th>' : ''}<th>总星数</th><th>战功XP</th><th>通关数</th><th>平均准确率</th></tr>` +
         rows.map((r, i) => `
           <tr${oj.user && r.user_id === oj.user.id ? ' class="me"' : ''}>
             <td class="b-rank">${i + 1}</td>
-            <td class="b-name">${esc(r.name || r.username)}</td>
+            <td class="b-name">${esc(r.username)}</td>${oj.admin ? `<td class="b-realname">${esc(r.real_name || '—')}</td>` : ''}
             <td>★ ${r.stars}</td><td>${r.xp}</td><td>${r.clears}</td>
             <td>${Math.round((r.avg_acc || 0) * 100)}%</td>
           </tr>`).join('');
@@ -985,11 +986,11 @@
       const rows = res.rows || [];
       if (!rows.length) empty.classList.remove('hidden');
       table.innerHTML =
-        `<tr><th>#</th><th>勇者</th><th>星级</th><th>WPM</th><th>准确率</th><th>耗时</th></tr>` +
+        `<tr><th>#</th><th>勇者</th>${oj.admin ? '<th>姓名</th>' : ''}<th>星级</th><th>WPM</th><th>准确率</th><th>耗时</th></tr>` +
         rows.map((r, i) => `
           <tr${oj.user && r.username === oj.user.username ? ' class="me"' : ''}>
             <td class="b-rank">${i + 1}</td>
-            <td class="b-name">${esc(r.name || r.username)}</td>
+            <td class="b-name">${esc(r.username)}</td>${oj.admin ? `<td class="b-realname">${esc(r.real_name || '—')}</td>` : ''}
             <td>${'★'.repeat(r.stars)}</td><td>${r.wpm}</td>
             <td>${Math.round((r.acc || 0) * 100)}%</td>
             <td>${(r.ms / 1000).toFixed(1)}s</td>

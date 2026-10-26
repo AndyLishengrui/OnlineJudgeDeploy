@@ -111,7 +111,9 @@ def _oj_profile(session_value):
             user = {
                 "id": int(u["id"]),
                 "username": str(u.get("username", "")),
-                "name": str(u.get("real_name") or u.get("username") or ""),
+                # ⚠️ real_name 在 profile 的 data 顶层，不在 data.user 里面
+                # （data.user 只有 id/username/email/admin_type 等）
+                "name": str(data.get("real_name") or u.get("real_name") or u.get("username") or ""),
                 "admin": u.get("admin_type") in ADMIN_TYPES,
             }
     except Exception:
@@ -143,6 +145,23 @@ def current_user(headers):
                 "last_seen=excluded.last_seen",
                 (user["id"], user["username"], user["name"], now, now))
     return user
+
+
+def _shape_board_rows(rows, is_admin):
+    """排行榜对外的统一口径。
+
+    - `username`（学号）本来就公开，保留；
+    - `name` 统一回落到 username，避免旧前端/外部调用误拿到真名；
+    - `real_name`（真名）**只给管理员**，匿名和普通学生一律为 None。
+    """
+    out = []
+    for r in rows:
+        d = dict(r)
+        real = d.get("name")
+        d["name"] = d.get("username") or ""
+        d["real_name"] = real if is_admin else None
+        out.append(d)
+    return out
 
 
 # ─────────── 输入校验 ───────────
@@ -427,12 +446,14 @@ class Handler(BaseHTTPRequestHandler):
         board.sort(key=lambda x: (-x["stars"], -x["xp"], -x["avg_acc"]))
         me_rank = None
         user = current_user(self.headers)
+        is_admin = bool(user and user["admin"])
         if user:
             for i, r in enumerate(board):
                 if r["user_id"] == user["id"]:
                     me_rank = dict(r, rank=i + 1)
                     break
-        self._send(200, {"rows": board[:limit], "me": me_rank})
+        me = _shape_board_rows([me_rank], is_admin)[0] if me_rank else None
+        self._send(200, {"rows": _shape_board_rows(board[:limit], is_admin), "me": me})
 
     def _h_board_snippet(self, snippet_id, q):
         try:
@@ -445,7 +466,9 @@ class Handler(BaseHTTPRequestHandler):
                 "FROM scores s JOIN users u ON u.user_id=s.user_id "
                 "WHERE s.snippet_id=? ORDER BY s.stars DESC, s.wpm DESC, s.acc DESC LIMIT ?",
                 (snippet_id, limit)).fetchall()
-        self._send(200, {"rows": [dict(r) for r in rows]})
+        user = current_user(self.headers)
+        self._send(200, {"rows": _shape_board_rows(
+            [dict(r) for r in rows], bool(user and user["admin"]))})
 
     def _h_list_packs(self):
         with _db_lock, _db() as conn:

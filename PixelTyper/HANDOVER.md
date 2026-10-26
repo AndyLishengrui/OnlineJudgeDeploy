@@ -116,6 +116,10 @@ sudo docker cp <打包文件> oj-backend:/tmp/ && sudo docker exec oj-backend sh
 - 总榜：总星数 → 战功 XP（`XP_FACTOR=[0,0.6,1,1.6]`，不含 Boss 1.5x 和每日 2x 加成）→ 平均准确率
 - 单关榜：星数 → WPM → 准确率
 - 0 星（准确率 <80%）的成绩不上传、不计入任何统计
+- **真名只给管理员**（2026-10-26）：`users.name` 存 OJ 的 `real_name`（⚠️ 该字段在 `/api/profile` 的 `data` **顶层**，
+  不在 `data.user` 里——以前读错位置导致排行榜显示的全是学号）。排行榜接口对管理员额外下发 `real_name` 字段，
+  匿名/普通学生一律为 `null`，页面只显示学号；管理员多出「姓名」一列（总榜和单关榜都有）。
+- 新用户首次访问/交卷时 `current_user()` 会自动把真名写进 `users.name`；老数据用一次性回填写入。
 
 ## 8. 前端关键机制（改代码前必读）
 
