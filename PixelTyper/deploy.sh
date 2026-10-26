@@ -23,5 +23,6 @@ ssh 122.51.69.77 '
   sudo docker exec oj-backend ls -la /app/dist/PixelTyper/
 '
 echo "==> 验证线上可访问"
-curl -s -o /dev/null -w "HTTP %{http_code}\n" "https://www.xmuoj.com/PixelTyper/"
-echo "==> 完成: https://www.xmuoj.com/PixelTyper/"
+# 用 apex：www 自 2026-10-26 起 301 到 apex，curl 不跟跳转会误报 301
+curl -s -o /dev/null -w "HTTP %{http_code}\n" "https://xmuoj.com/PixelTyper/"
+echo "==> 完成: https://xmuoj.com/PixelTyper/"
