@@ -147,6 +147,13 @@ def current_user(headers):
     return user
 
 
+def _xp_of(stars, chars):
+    """星级 XP，与前端口径一致（不含 BOSS/每日加成）。库里若有越界的 stars
+    （旧数据、手改库）按 0 算——裸下标会让整条路由 500。"""
+    f = XP_FACTOR[stars] if 0 <= stars < len(XP_FACTOR) else 0
+    return round(chars * f)
+
+
 def _shape_board_rows(rows, is_admin):
     """排行榜对外的统一口径。
 
@@ -261,11 +268,15 @@ class Handler(BaseHTTPRequestHandler):
     server_version = "PixelTyperAPI/1.0"
 
     # ── 工具 ──
-    def _send(self, code, obj):
+    def _send(self, code, obj, headers=None):
         data = json.dumps(obj, ensure_ascii=False).encode("utf-8")
         self.send_response(code)
         self.send_header("Content-Type", "application/json; charset=utf-8")
         self.send_header("Content-Length", str(len(data)))
+        # 全是带 Cookie 的私有数据（含管理员才看得到的真名）：任何缓存层都不许存
+        self.send_header("Cache-Control", "no-store")
+        for k, v in (headers or {}).items():
+            self.send_header(k, v)
         self.end_headers()
         self.wfile.write(data)
 
@@ -310,6 +321,8 @@ class Handler(BaseHTTPRequestHandler):
                 return self._send(200, {"ok": True, "ts": time.time()})
             if path == "/me":
                 return self._h_me()
+            if path == "/my-scores":
+                return self._h_my_scores()
             if path == "/leaderboard/overall":
                 return self._h_board_overall(q)
             m = re.match(r"^/leaderboard/snippet/([A-Za-z0-9._-]+)$", path)
@@ -323,6 +336,9 @@ class Handler(BaseHTTPRequestHandler):
             self._err(404, "not found")
         except BrokenPipeError:
             pass
+        except (Unauthorized, Forbidden, BadInput) as e:
+            # 与 do_POST 对齐：GET 侧若有人改用 raise 写鉴权，别被兜底成 500
+            self._err({Unauthorized: 401, Forbidden: 403, BadInput: 422}[type(e)], str(e))
         except Exception:
             self._err(500, "server error")
 
@@ -387,6 +403,34 @@ class Handler(BaseHTTPRequestHandler):
             "admin": user["admin"],
         })
 
+    def _h_my_scores(self):
+        """本账号在服务器上的全部最佳成绩。前端登录后拉它回灌本机进度
+        （星星/战绩/XP 只存在 localStorage，换电脑就「进度没了」）。
+
+        ⚠️ current_user 内部自己会取 _db_lock（threading.Lock 不可重入）：
+        必须在下面的 with 之前调用，两者绝不能嵌套，否则整个 API 死锁。
+        """
+        user = current_user(self.headers)
+        if not user:
+            return self._send(401, {"ok": False, "error": "请先登录 xmuoj"})
+        uid = user["id"]
+        with _db_lock, _db() as conn:
+            rows = conn.execute(
+                "SELECT snippet_id, stars, wpm, acc, ms, chars, max_combo, updated_at "
+                "FROM scores WHERE user_id=?", (uid,)).fetchall()
+        scores = {}
+        xp = 0
+        for r in rows:
+            xp += _xp_of(r["stars"], r["chars"])
+            scores[r["snippet_id"]] = {
+                "stars": r["stars"], "wpm": r["wpm"], "acc": r["acc"],
+                "ms": r["ms"], "chars": r["chars"],
+                "max_combo": r["max_combo"], "updated_at": r["updated_at"],
+            }
+        self._send(200, {"ok": True, "user_id": uid, "count": len(scores),
+                         "xp": xp, "scores": scores},
+                   {"Vary": "Cookie"})
+
     def _h_submit_score(self):
         self._require_write_guard()
         user = current_user(self.headers)
@@ -436,7 +480,7 @@ class Handler(BaseHTTPRequestHandler):
                 "user_id": r["user_id"], "username": r["username"], "name": r["name"],
                 "stars": 0, "xp": 0, "clears": 0, "_acc": 0.0})
             a["stars"] += r["stars"]
-            a["xp"] += round(r["chars"] * XP_FACTOR[r["stars"]])
+            a["xp"] += _xp_of(r["stars"], r["chars"])
             a["clears"] += 1
             a["_acc"] += r["acc"]
         board = []

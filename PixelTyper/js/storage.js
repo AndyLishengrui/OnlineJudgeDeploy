@@ -7,6 +7,7 @@
   const KEY = 'pixeltyper.profile.v1';
 
   const DEFAULTS = () => ({
+    uid: null,          // 这份本机档案最后对齐过的 xmuoj user_id（null = 还是没认领的匿名档）
     xp: 0,
     stars: {},          // snippetId -> 0..3（历史最高）
     best: {},           // snippetId -> {wpm, acc, attempts, clears, bestAcc, last}（每一关的战绩）
@@ -66,8 +67,11 @@
     save();
   }
 
+  /** 写回本机档案。返回是否成功——配额满 / 隐私模式下会失败，
+      调用方（比如进度回灌）必须知道「看起来存了其实没存」。 */
   function save() {
-    try { localStorage.setItem(KEY, JSON.stringify(profile)); } catch (e) { /* 隐私模式 */ }
+    try { localStorage.setItem(KEY, JSON.stringify(profile)); return true; }
+    catch (e) { return false; }
   }
 
   function addXp(n) { profile.xp += Math.round(n); save(); }
@@ -134,6 +138,71 @@
     return true; // 新解锁
   }
 
+  // ─────────── 服务器进度回灌（GET /my-scores） ───────────
+  // 星星/战绩/XP 只存在本机 localStorage，换电脑或清缓存就「进度没了」。
+  // 服务器 scores 一行 = 一关的最佳成绩，登录后拉回来合并即可。
+  // 两个口径必须照办：① sts.acc 是 0..1 的比率，本机 best.acc/bestAcc 是百分数；
+  // ② 速度与准确率必须成对写入（见 recordRun），不能各取各的最大值。
+  const BAD_IDS = { '__proto__': 1, 'constructor': 1, 'prototype': 1 };  // snippet_id 允许下划线
+  const num = (v, lo, hi) => {
+    const n = Number(v);
+    return Number.isFinite(n) ? Math.min(hi, Math.max(lo, n)) : null;
+  };
+
+  /** 把服务器成绩并进本机档案。
+      @param res {user_id, xp, scores:{id:{stars,wpm,acc,ms,chars,updated_at}}}
+      @param isKnown id => bool，当前题库里还存在的关卡（旧关卡改版后的孤儿 id 不写进来）
+      @return {changed, replaced, skipped} —— replaced 表示档案原本属于别的账号，已整体换成本账号 */
+  function mergeServer(res, isKnown) {
+    const uid = num(res && res.user_id, 1, Number.MAX_SAFE_INTEGER);
+    const scores = res && res.scores;
+    if (uid === null || !Number.isInteger(uid) || uid <= 0) return { changed: false, replaced: false, skipped: 0 };
+    if (!scores || typeof scores !== 'object' || Array.isArray(scores)) return { changed: false, replaced: false, skipped: 0 };
+
+    const p = load();
+    // 换账号：本机这份星星/战绩属于上一个人，不能带进新账号，整体按服务器重建
+    const replaced = p.uid != null && p.uid !== uid;
+    if (replaced) {
+      p.stars = {}; p.best = {}; p.bossKills = {}; p.xp = 0;
+      p.history = []; p.keyStats = {}; p.achievements = [];
+      p.daily = { lastDay: '', streak: 0 };
+    }
+    let changed = replaced, skipped = 0;
+
+    for (const id of Object.keys(scores)) {
+      if (BAD_IDS[id]) continue;
+      if (isKnown && !isKnown(id)) { skipped += 1; continue; }
+      const row = scores[id];
+      if (!row || typeof row !== 'object') continue;
+      const stars = num(row.stars, 0, 3);
+      if (stars === null || stars < 1) continue;
+      const wpm = num(row.wpm, 0, 1000);
+      const acc = num(row.acc, 0, 1);
+      if (wpm === null || acc === null) continue;
+      if ((p.stars[id] || 0) < stars) { p.stars[id] = stars; changed = true; }
+      const b = p.best[id] || (p.best[id] = { wpm: 0, acc: 0, attempts: 0, clears: 0, bestAcc: 0, last: '' });
+      const pct = Math.round(acc * 1000) / 10;               // 0.9823 → 98.2
+      // 卡片战绩行和战场 HUD 都拿 attempts 当门槛：服务器只知道「至少通关过一次」
+      if (!b.attempts) { b.attempts = 1; changed = true; }
+      if (!b.clears) { b.clears = 1; changed = true; }
+      if (Math.round(wpm) > b.wpm) { b.wpm = Math.round(wpm); b.acc = pct; changed = true; }
+      if (pct > b.bestAcc) { b.bestAcc = pct; changed = true; }
+      if (!b.last && row.updated_at) {
+        const d = new Date(Number(row.updated_at) * 1000);
+        if (!isNaN(d.getTime())) b.last = d.toLocaleString('zh-CN');
+      }
+    }
+
+    // XP：服务器口径不含 Boss/每日加成，取大值只保证「不倒退」
+    const sx = Math.round(num(res.xp, 0, 1e7) || 0);
+    if (sx > (Number(p.xp) || 0)) { p.xp = sx; changed = true; }
+
+    // uid 变了必须落盘：否则下次加载还是老的 null，「这台机器上一份档案属于别人」就检测不出来
+    if (p.uid !== uid) { p.uid = uid; changed = true; }
+    const saved = changed ? save() : true;
+    return { changed, replaced, skipped, saved };
+  }
+
   /** 薄弱按键：按错误率排序取前 5（至少 3 次击键才统计） */
   function weakKeys() {
     return Object.entries(profile.keyStats)
@@ -148,7 +217,7 @@
 
   window.Store = {
     load, save, addXp, levelOf, recordStars, recordRun, bestOf, recordKeyStats,
-    pushHistory, unlockAchv, weakKeys,
+    pushHistory, unlockAchv, weakKeys, mergeServer,
     get p() { return load(); },
   };
 })();

@@ -20,6 +20,13 @@
   let packDetailCache = {};    // id -> 完整包（含 snippets）
   let curPack = null;          // 正在浏览的自定义包
 
+  // 进度回灌状态（见 syncProgress）：只有「成功合并过」才置 syncedFor，失败留着下次重试
+  let syncedFor = null;        // 已对齐的 user_id
+  let syncCount = 0;           // 服务器上恢复回来的关数
+  let syncNote = '';           // 上次失败原因（给 chip 显示，别让用户以为还在丢）
+  let syncTriedAt = 0;
+  let syncing = false;
+
   async function initOnline() {
     const me = await window.PTAPI.me();
     oj.moved = !!(me && me.__moved);
@@ -31,13 +38,16 @@
     }
     renderOjChip();
     refreshPacks();
+    syncProgress();  // 异步回灌，不 await：失败也不影响地图和关卡包的呈现
   }
 
   /** OJ 没有 /login 路由（那个是管理端的）：登录是首页右上角「登录」按钮弹出的对话框。
       所以点提示条是开新标签页去首页登录，回到本页时这里再自动探测一次。 */
   let rechecking = false;
   async function recheckLogin() {
-    if (oj.logged_in || rechecking) return;
+    if (rechecking) return;
+    // 已经登录过：可能只是上次 /my-scores 失败（后端重启、弱网），再试一次（内部有 30s 节流）
+    if (oj.logged_in) { syncProgress(); return; }
     rechecking = true;
     try { await initOnline(); } finally { rechecking = false; }
   }
@@ -53,10 +63,19 @@
       el.classList.add('offline');
     } else {
       el.classList.remove('offline');
-      el.textContent = oj.logged_in ? `🎓 ${oj.user.name || oj.user.username}` : '⚪ 点我登录 xmuoj';
-      el.title = oj.logged_in
+      let txt = oj.logged_in ? `🎓 ${oj.user.name || oj.user.username}` : '⚪ 点我登录 xmuoj';
+      let tip = oj.logged_in
         ? '已登录：成绩会同步到排行榜'
         : '在新标签页打开 xmuoj 首页 → 点右上角「登录」→ 回来这页就自动生效（OJ 没有独立的登录网址）';
+      if (oj.logged_in && syncNote) {
+        txt += ' · ⚪进度未同步';
+        tip += `\n本机进度这次没能从服务器恢复（${syncNote}），成绩仍只记在本机，稍后会自动重试。`;
+      } else if (oj.logged_in && syncedFor != null) {
+        txt += ` · ✔恢复 ${syncCount} 关`;
+        tip += `\n已从服务器取回你账号上的 ${syncCount} 关成绩（星星 / 最快 WPM / XP），本机进度和账号对齐了。`;
+      }
+      el.textContent = txt;
+      el.title = tip;
     }
     $('#btn-goto-admin').classList.toggle('hidden', !oj.admin);
   }
@@ -68,6 +87,75 @@
       packCache = res.packs;
       packDetailCache = {}; // 摘要变了 → 详情缓存失效
       if ($('#screen-map').classList.contains('active')) renderMap();
+    }
+  }
+
+  // ─────────── 账号进度回灌 ───────────
+  // 星星 / 战绩 / XP 只存在本机 localStorage：换电脑、清缓存、域名迁移都会「进度没了」。
+  // 服务器 scores 表里本来就有每个人的最佳成绩，登录后拉回来合并即可（只增不减）。
+  const PK_ID_RE = /^pk\d+-\d+$/;   // 老师自定义包的关卡 id
+
+  /** 当前题库里还存在的关卡 id。服务器可能存着改版前的旧 id（题库一改版就换 id），
+      原样写进档案会变成「地图上看不到、修炼小屋却算进去」的幽灵星星。 */
+  function isKnownId(id) {
+    if (PK_ID_RE.test(id)) return true;
+    return [window.SNIPPETS, window.LLM_SNIPPETS, pyLanes(), cppLanes()]
+      .some(list => (list || []).some(s => s.id === id));
+  }
+
+  /** 合并完重画「当前这一屏」。每个 render* 内部都会 show()，所以只能按 active 的屏分派：
+      按 curStageTier 猜会把人从标题画面直接推进第 1 关，或从战场上拽走。 */
+  function refreshProfileViews() {
+    renderChips();
+    const act = document.querySelector('.screen.active');
+    const id = act ? act.id : '';
+    if (id === 'screen-map') renderMap();
+    else if (id === 'screen-profile') renderProfile();
+    else if (id === 'screen-stage') {
+      const bk = bankAtTier(curStageTier);
+      if (curStageTier === -1 && curPack) renderPack(curPack);
+      else if (curStageTier === -2) renderDojo();
+      else if (curStageTier === -3) renderLlm();
+      else if (bk) renderBank(bk);
+      else renderStage(curStageTier, curLang);
+    }
+    // screen-boot / screen-game / screen-result / board / admin：只刷顶部芯片，
+    // 别重画整屏（重画会把正在打的这一局顶掉）
+  }
+
+  /** 登录后把服务器上的最佳成绩并进本机档案，并按需重画当前屏。
+      对局中不改档案（这一局算谁的说不清）；失败只记 note，下次 focus 自动重试。 */
+  async function syncProgress(force) {
+    if (!oj.logged_in || !oj.user) return;
+    const uid = Number(oj.user.id);
+    if (!Number.isInteger(uid) || uid <= 0) return;
+    if (!force && syncedFor === uid) return;
+    if (syncing) return;
+    if (typeof window.PTAPI.myScores !== 'function') return;
+    const act = document.querySelector('.screen.active');
+    if (act && (act.id === 'screen-game' || act.id === 'screen-result')) return;
+    if (!force && Date.now() - syncTriedAt < 30000) return;  // 失败后 30s 再试，别反复打后端
+    syncing = true; syncTriedAt = Date.now();
+    try {
+      const res = await window.PTAPI.myScores();
+      if (!res || res.__moved || res.__unauth || res.__error || !res.scores) {
+        syncNote = !res ? '离线或超时'
+          : res.__unauth ? '登录已过期'
+          : res.__error ? res.__error : '响应异常';
+        renderOjChip();
+        return;
+      }
+      const r = Store.mergeServer(res, isKnownId);
+      syncedFor = uid;
+      syncCount = Math.max(0, (res.count || 0) - r.skipped);
+      syncNote = r.saved === false ? '本机存储写不进去（隐私模式或已满）' : '';
+      renderOjChip();
+      if (r.changed) refreshProfileViews();
+      if (r.skipped) console.info(`[pixeltyper] ${r.skipped} 关成绩对应的关卡已改版/下架，未并入本机`);
+    } catch (e) {
+      console.warn('[pixeltyper] 进度同步失败', e);
+    } finally {
+      syncing = false;
     }
   }
 
@@ -108,9 +196,31 @@
   function llmLanes() { return window.LLM_SNIPPETS || []; }
   function llmOfLesson(no) { return llmLanes().filter(s => s.lesson === no); }
 
-  // Boss 击杀记录按语言分开（py1..c5）；旧版数字键兼容两种语言
+  // 语法题库按语言分成两张卡（data/pybank.js / data/cppbank.js），同样不进 window.SNIPPETS
+  function pyLessons() { return window.PY_LESSONS || []; }
+  function pyLanes() { return window.PY_SNIPPETS || []; }
+  function pyOfLesson(no) { return pyLanes().filter(s => s.lesson === no); }
+  function cppLessons() { return window.CPPQ_LESSONS || []; }
+  function cppLanes() { return window.CPPQ_SNIPPETS || []; }
+  function cppOfLesson(no) { return cppLanes().filter(s => s.lesson === no); }
+
+  // 两张卡的数据形状完全一样，渲染只写一份。tier 用来占 curStageTier 的负哨兵。
+  const BANKS = {
+    py: { label: 'Python 语法题库', icon: '🐍', cls: 'py', tag: 'PY', mods: 'PY_MODULES',
+          tier: -4, pre: 'pyq', lessons: pyLessons, lanes: pyLanes, of: pyOfLesson },
+    cpp: { label: 'C++ 语法题库', icon: '⚙', cls: 'c', tag: 'C++', mods: 'CPPQ_MODULES',
+           tier: -5, pre: 'cppq', lessons: cppLessons, lanes: cppLanes, of: cppOfLesson },
+  };
+  const BANK_LIST = ['py', 'cpp'];
+  function bankAtTier(t) { return BANK_LIST.find(k => BANKS[k].tier === t) || null; }
+
+  // Boss 击杀记录按语言分开（py1..c5）；旧版数字键兼容两种语言。
+  // 第三路是推导：Boss 就是该 tier 该 lang 代码最长的那关，有星即等于打过了。
+  // 这样从服务器回灌的进度（只有星星、没有 bossKills）也能正常解锁下一关。
   function bossKilled(tier, lang) {
-    return !!(Store.p.bossKills[lang + tier] || Store.p.bossKills[tier]);
+    if (Store.p.bossKills[lang + tier] || Store.p.bossKills[tier]) return true;
+    const b = tier >= 1 ? bossOf(tier, lang) : null;
+    return !!(b && (Store.p.stars[b.id] || 0) > 0);
   }
   function stageUnlocked(tier, lang) {
     if (tier <= 1) return true;
@@ -134,6 +244,26 @@
           <span class="llm-les-m">${l.n} 关 · ${l.mins}′ · ★${got}/${l.n * 3}</span>
         </div>`;
       }).join('') + '</div>').join('');
+  }
+
+  // 语法题库卡的目录：四个模块各一列，每个实验一行（实验号 / 名称 / 题数 · 星数）。
+  // C++ 卡里有的模块一个实验都没有（例如「数据容器」没有 C++ 题解），空列直接不渲染。
+  function bankModColumns(key) {
+    const B = BANKS[key];
+    const mods = window[B.mods] || [];
+    return mods.map((m, mi) => {
+      const les = B.lessons().filter(l => l.mod === mi);
+      if (!les.length) return '';
+      return `<div class="llm-mod"><div class="llm-mod-name">${esc(m)}</div>` +
+        les.map(l => {
+          const got = B.of(l.no).reduce((n, s) => n + (Store.p.stars[s.id] || 0), 0);
+          return `<div class="llm-les" data-no="${l.no}">
+          <span class="llm-les-no">${esc(l.label)}</span>
+          <span class="llm-les-t">${esc(l.title)}</span>
+          <span class="llm-les-m">${l.p} 题 · ★${got}/${l.n * 3}</span>
+        </div>`;
+        }).join('') + '</div>';
+    }).join('');
   }
 
   function renderMap() {
@@ -201,6 +331,37 @@
       renderLlm(les ? +les.dataset.no : null);
     };
     wrap.appendChild(llmNode);
+
+    // 语法题库 —— 一门语言一张整幅宽卡，实验目录就长在卡里
+    sec('📚 语法题库实战');
+    BANK_LIST.forEach(key => {
+      const B = BANKS[key];
+      const lanes = B.lanes();
+      if (!lanes.length) return;             // 数据文件没加载就别出空卡
+      const lessons = B.lessons();
+      const node = document.createElement('div');
+      node.className = 'stage-node llm-node pybank-node';
+      const problems = lessons.reduce((n, l) => n + l.p, 0);
+      const alts = lanes.filter(s => s.alt).length;
+      const stars = lanes.reduce((n, s) => n + (Store.p.stars[s.id] || 0), 0);
+      node.innerHTML = `
+      <div class="llm-head">
+        <canvas class="pixel-canvas" width="16" height="16"></canvas>
+        <div>
+          <div class="node-name">${B.icon} ${esc(B.label)}</div>
+          <div class="node-sub">${lessons.length} 个实验 · ${problems} 题 · ${lanes.length} 关${alts ? ` · 含 ${alts} 关同题多解法` : ''} · 代码取自每题参考题解</div>
+          <div class="node-stars">★ ${stars}/${lanes.length * 3}</div>
+        </div>
+      </div>
+      <div class="llm-mods">${bankModColumns(key)}</div>`;
+      PixelArt.draw(node.querySelector('canvas'), key === 'py' ? 'hero' : 'vera');
+      node.onclick = e => {
+        const les = e.target.closest('.llm-les');
+        SFX.click();
+        renderBank(key, les ? +les.dataset.no : 0);
+      };
+      wrap.appendChild(node);
+    });
 
     // 模块三/四：Python / C++ 语言关卡（分开闯关，各自解锁）
     [['py', '🐍 Python 语言关卡'], ['c', '⚙ C++ 语言关卡']].forEach(([lang, title]) => {
@@ -433,9 +594,70 @@
       if (el) el.scrollIntoView({ block: 'start' });
     });
   }
-  // ─────────── 深链接：#llm/<讲>[/<第几关>] ───────────
+  // ─────────── 语法题库（一门语言一张卡） ───────────
+  // 一屏列出这张卡的全部关卡，按实验分节；从地图点某个实验进来就滚到那一节。
+  // 同题若有第二种同语言解法，会连着排两关（解法一 / 解法二），各记各的星。
+  const curBankNo = { py: 0, cpp: 0 };
+  function renderBank(key, no) {
+    const B = BANKS[key];
+    curStageTier = B.tier; // 撤退/复盘据此回到这一屏
+    curPack = null;
+    if (no != null) curBankNo[key] = no;
+    renderChips();
+    $('#finger-map').classList.add('hidden');
+    $('#stage-title').textContent = `◆ ${B.icon} ${B.label}`;
+    const lessons = B.lessons();
+    const nProb = lessons.reduce((n, l) => n + l.p, 0);
+    $('#stage-desc').textContent = key === 'py'
+      ? `${lessons.length} 个实验 · ${nProb} 题，代码取自每题的 Python 参考题解：从新手村的 A+B 一路打到函数与字典。按实验分节，过一关就能接着打下一关。`
+      : `只收题库里已经有 C++ 参考题解的 ${nProb} 道题（${lessons.length} 个实验），代码就是那份 solution.cpp。按实验分节，过一关就能接着打下一关。`;
+    const grid = $('#level-grid');
+    grid.innerHTML = '';
+    lessons.forEach(l => {
+      const head = document.createElement('div');
+      head.className = 'llm-sec';
+      head.dataset.no = l.no;
+      const got = B.of(l.no).reduce((n, s) => n + (Store.p.stars[s.id] || 0), 0);
+      head.innerHTML = `<span class="llm-sec-no">${esc(l.label)}</span>
+        <span class="llm-sec-t">${esc(l.title)}</span>
+        <span class="llm-sec-m">${esc(l.src)} · ${l.p} 题 · ★${got}/${l.n * 3}</span>`;
+      grid.appendChild(head);
+      B.of(l.no).forEach(sn => {
+        const card = document.createElement('div');
+        card.className = 'level-card';
+        const stars = Store.p.stars[sn.id] || 0;
+        const lines = sn.code.split('\n').length;
+        card.innerHTML = `
+          <span class="lv-lang ${B.cls}">${B.tag}</span>
+          <div class="lv-title">${esc(sn.title)}</div>
+          <div class="lv-meta">${lines} 行 · ${sn.code.length} 字符${sn.hint ? ' · ' + esc(sn.hint) : ''}</div>
+          <div class="lv-stars">${'★'.repeat(stars)}${'☆'.repeat(3 - stars)}</div>${bestLine(sn)}`;
+        card.onclick = () => { SFX.click(); startLevel(sn, { list: B.lanes() }); };
+        grid.appendChild(card);
+      });
+    });
+    show('screen-stage');
+    requestAnimationFrame(() => {
+      const el = grid.querySelector(`.llm-sec[data-no="${curBankNo[key]}"]`);
+      if (el) el.scrollIntoView({ block: 'start' });
+    });
+  }
+  // ─────────── 深链接：#llm/<讲>[/<第几关>] · #pyq|cppq/<实验>[/<第几题>[b]] ───────────
   // 供导读页的「跟打」卡片直接跳进来，例如 #llm/6/2 = 讲6 第2关
   function applyHash() {
+    const p = /^#(pyq|cppq)(?:\/([0-7]))?(?:\/(\d{1,2})([a-d]?))?$/.exec(location.hash || '');
+    if (p) {
+      const key = p[1] === 'pyq' ? 'py' : 'cpp';
+      const B = BANKS[key];
+      const no = p[2] ? +p[2] : 0;
+      const k = p[3] ? +p[3] : 0;
+      renderBank(key, no);
+      // 第几题指「题号」而不是关卡序号（同题多解法的几关共用一个题号）；
+      // 末尾加 b/c/d 才进那道题的第二种解法。id 里编了题号，按 id 找最稳。
+      const sn = k ? B.lanes().find(s => s.id === `${B.pre}-${no}-${String(k).padStart(2, '0')}${p[4] || ''}`) : null;
+      if (sn) startLevel(sn, { list: B.lanes() });
+      return true;
+    }
     const m = /^#llm(?:\/(\d{1,2}))?(?:\/(\d{1,2}))?$/.exec(location.hash || '');
     if (!m) return false;
     const no = m[1] ? +m[1] : 1;
@@ -728,10 +950,12 @@
   function backFromReview() {
     const g = gameCtx;
     session = null;
+    const bk = bankAtTier(curStageTier);
     if (g.pack) renderPack(g.pack);
     else if (g.daily) renderMap();
     else if (curStageTier === -2) renderDojo();
     else if (curStageTier === -3) renderLlm();
+    else if (bk) renderBank(bk);
     else renderStage(g.snippet.tier, langOf(g.snippet));
   }
 
@@ -929,6 +1153,15 @@
       opts.push(`<optgroup label="🧠 讲${l.no} ${esc(l.title)}">` +
         llmOfLesson(l.no).map(s => `<option value="${esc(s.id)}">${esc(s.title)}</option>`).join('') +
         '</optgroup>');
+    });
+    BANK_LIST.forEach(key => {
+      const B = BANKS[key];
+      B.lessons().forEach(l => {
+        // 同题多解法时几关同名，选项里标一下解法，否则下拉里分不出
+        opts.push(`<optgroup label="${B.icon} ${esc(l.label)} ${esc(l.title)}">` +
+          B.of(l.no).map(s => `<option value="${esc(s.id)}">${esc(s.title)}${s.alt ? ' · 解法二' : ''}</option>`).join('') +
+          '</optgroup>');
+      });
     });
     packCache.forEach(pk => {
       const detail = packDetailCache[pk.id];
@@ -1166,12 +1399,15 @@
     const lv = Store.levelOf(p.xp);
     const totalStars = Object.values(p.stars).reduce((a, b) => a + b, 0);
     const runs = p.history.length;
-    const best = p.history.reduce((m, h) => Math.max(m, h.wpm), 0);
+    // 从服务器回灌的档案没有 history，但有 best：两个来源取大，否则新设备上「最高 WPM」是 0
+    const best = Math.max(
+      p.history.reduce((m, h) => Math.max(m, h.wpm), 0),
+      ...Object.values(p.best).map(b => b.wpm || 0), 0);
     $('#profile-summary').innerHTML = `
       <div class="ps-item">称号<br><b>${rankTitle()}</b></div>
       <div class="ps-item">总 XP<br><b>${p.xp}</b></div>
       <div class="ps-item">星星<br><b>★ ${totalStars}</b></div>
-      <div class="ps-item">修炼次数<br><b>${runs}</b></div>
+      <div class="ps-item">修炼次数（本机）<br><b>${runs}</b></div>
       <div class="ps-item">最高 WPM<br><b>${best}</b></div>
       <div class="ps-item">连续打卡<br><b>${p.daily.streak} 天</b></div>`;
 
@@ -1278,9 +1514,11 @@
       if (gameCtx) clearInterval(gameCtx.timerId);
       session = null;
       if (gameCtx) gameCtx.review = false;
+      const bk = bankAtTier(curStageTier);
       if (curPack && curStageTier === -1) renderPack(curPack);
       else if (curStageTier === -2) renderDojo();
       else if (curStageTier === -3) renderLlm();
+      else if (bk) renderBank(bk);
       else renderStage(curStageTier);
     };
     $('#btn-review-result').onclick = () => { SFX.click(); showResultFromReview(); };

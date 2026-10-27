@@ -54,6 +54,10 @@
     /** {logged_in, user:{id,username,name}, admin} 或 {logged_in:false} 或 null(离线) */
     me: () => req('me'),
 
+    /** 本账号在服务器上的全部最佳成绩：{ok,user_id,count,xp,scores:{id:{stars,wpm,acc,ms,chars,updated_at}}}
+        未登录 → {__unauth}；后端还没更新 → {__error:'HTTP 404'} */
+    myScores: () => req('my-scores'),
+
     /** 上传通关成绩；返回 {ok, improved, best} / {__unauth} / {__error} / null */
     submitScore: s => req('scores', { method: 'POST', body: s }),
 
