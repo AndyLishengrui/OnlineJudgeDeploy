@@ -9,6 +9,17 @@
   const BASE = 'api';           // 相对页面路径，线上 = /PixelTyper/api
   const TIMEOUT = 6000;
 
+  // 排行榜分页参数；undefined/null 一律不拼，保持旧调用（不带参）仍可用。
+  function qs(params) {
+    const parts = [];
+    ['limit', 'offset'].forEach(k => {
+      if (params[k] !== undefined && params[k] !== null) {
+        parts.push(k + '=' + encodeURIComponent(params[k]));
+      }
+    });
+    return parts.length ? '?' + parts.join('&') : '';
+  }
+
   async function req(path, opts) {
     opts = opts || {};
     const ctrl = new AbortController();
@@ -61,11 +72,13 @@
     /** 上传通关成绩；返回 {ok, improved, best} / {__unauth} / {__error} / null */
     submitScore: s => req('scores', { method: 'POST', body: s }),
 
-    /** 总榜 {rows:[{username,name,stars,xp,clears,avg_acc}], me} */
-    boardOverall: () => req('leaderboard/overall'),
+    /** 总榜分页 {rows:[{username,name,stars,xp,clears,avg_acc}], me, total, offset, limit}
+        不传 limit/offset 时后端默认第一页 50 名。 */
+    boardOverall: (limit, offset) => req('leaderboard/overall' + qs({ limit, offset })),
 
-    /** 单关榜 {rows:[{username,name,stars,wpm,acc,ms}]} */
-    boardSnippet: id => req(`leaderboard/snippet/${encodeURIComponent(id)}`),
+    /** 单关榜分页 {rows:[{username,name,stars,wpm,acc,ms}], total, offset, limit} */
+    boardSnippet: (id, limit, offset) =>
+      req(`leaderboard/snippet/${encodeURIComponent(id)}` + qs({ limit, offset })),
 
     /** 关卡包列表 {packs:[{id,name,desc,count,updated_at}]} */
     packs: () => req('packs'),

@@ -466,10 +466,16 @@ class Handler(BaseHTTPRequestHandler):
                          "best": {"stars": row["stars"], "wpm": row["wpm"], "acc": row["acc"]}})
 
     def _h_board_overall(self, q):
+        # 分页：默认 50/页，上限 200；offset 供前端「加载更多」。
+        # 聚合本来就要扫全表，末尾切片几乎零成本。
         try:
-            limit = max(1, min(int(q.get("limit", 50)), 100))
-        except ValueError:
+            limit = max(1, min(int(q.get("limit", 50)), 200))
+        except (ValueError, TypeError):
             limit = 50
+        try:
+            offset = max(0, int(q.get("offset", 0)))
+        except (ValueError, TypeError):
+            offset = 0
         with _db_lock, _db() as conn:
             rows = conn.execute(
                 "SELECT s.user_id, u.username, u.name, s.stars, s.chars, s.acc "
@@ -497,22 +503,31 @@ class Handler(BaseHTTPRequestHandler):
                     me_rank = dict(r, rank=i + 1)
                     break
         me = _shape_board_rows([me_rank], is_admin)[0] if me_rank else None
-        self._send(200, {"rows": _shape_board_rows(board[:limit], is_admin), "me": me})
+        self._send(200, {"rows": _shape_board_rows(board[offset:offset + limit], is_admin),
+                         "me": me, "total": len(board), "offset": offset, "limit": limit})
 
     def _h_board_snippet(self, snippet_id, q):
         try:
-            limit = max(1, min(int(q.get("limit", 20)), 50))
-        except ValueError:
+            limit = max(1, min(int(q.get("limit", 20)), 200))
+        except (ValueError, TypeError):
             limit = 20
+        try:
+            offset = max(0, int(q.get("offset", 0)))
+        except (ValueError, TypeError):
+            offset = 0
         with _db_lock, _db() as conn:
+            total = conn.execute(
+                "SELECT COUNT(*) FROM scores WHERE snippet_id=?", (snippet_id,)).fetchone()[0]
             rows = conn.execute(
                 "SELECT u.username, u.name, s.stars, s.wpm, s.acc, s.ms "
                 "FROM scores s JOIN users u ON u.user_id=s.user_id "
-                "WHERE s.snippet_id=? ORDER BY s.stars DESC, s.wpm DESC, s.acc DESC LIMIT ?",
-                (snippet_id, limit)).fetchall()
+                "WHERE s.snippet_id=? ORDER BY s.stars DESC, s.wpm DESC, s.acc DESC "
+                "LIMIT ? OFFSET ?",
+                (snippet_id, limit, offset)).fetchall()
         user = current_user(self.headers)
         self._send(200, {"rows": _shape_board_rows(
-            [dict(r) for r in rows], bool(user and user["admin"]))})
+            [dict(r) for r in rows], bool(user and user["admin"])),
+            "total": total, "offset": offset, "limit": limit})
 
     def _h_list_packs(self):
         with _db_lock, _db() as conn:

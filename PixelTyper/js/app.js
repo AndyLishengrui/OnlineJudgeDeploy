@@ -1125,6 +1125,99 @@
 
   // ─────────── 排行榜 ───────────
   let boardMode = 'overall';
+  const BOARD_PAGE = 50;       // 每页 50 名，后端上限 200
+  let boardRows = [];          // 已渲染的行：用于分页 offset 和名次连续
+  let boardTotal = 0;          // 后端返回的完整榜单人数
+  let boardSeq = 0;            // 切榜/切关时作废旧请求
+
+  function boardHeadHtml() {
+    // 管理员多一列真名（real_name 只有管理员请求时后端才下发）
+    const real = oj.admin ? '<th>姓名</th>' : '';
+    if (boardMode === 'overall') {
+      return `<tr><th>#</th><th>勇者</th>${real}<th>总星数</th><th>战功XP</th><th>通关数</th><th>平均准确率</th></tr>`;
+    }
+    return `<tr><th>#</th><th>勇者</th>${real}<th>星级</th><th>WPM</th><th>准确率</th><th>耗时</th></tr>`;
+  }
+
+  function boardRowHtml(r, rank) {
+    const real = oj.admin ? `<td class="b-realname">${esc(r.real_name || '—')}</td>` : '';
+    if (boardMode === 'overall') {
+      return `
+          <tr${oj.user && r.user_id === oj.user.id ? ' class="me"' : ''}>
+            <td class="b-rank">${rank}</td>
+            <td class="b-name">${esc(r.username)}</td>${real}
+            <td>★ ${r.stars}</td><td>${r.xp}</td><td>${r.clears}</td>
+            <td>${Math.round((r.avg_acc || 0) * 100)}%</td>
+          </tr>`;
+    }
+    return `
+          <tr${oj.user && r.username === oj.user.username ? ' class="me"' : ''}>
+            <td class="b-rank">${rank}</td>
+            <td class="b-name">${esc(r.username)}</td>${real}
+            <td>${'★'.repeat(r.stars)}</td><td>${r.wpm}</td>
+            <td>${Math.round((r.acc || 0) * 100)}%</td>
+            <td>${(r.ms / 1000).toFixed(1)}s</td>
+          </tr>`;
+  }
+
+  async function loadBoardPage(seq, reset) {
+    const table = $('#board-table');
+    const empty = $('#board-empty');
+    const meLine = $('#board-me-line');
+    const moreWrap = $('#board-more-wrap');
+    const moreBtn = $('#btn-board-more');
+    const sel = $('#board-snippet-select');
+    if (boardMode === 'snippet' && !sel.value) return;
+    const offset = reset ? 0 : boardRows.length;
+
+    moreBtn.disabled = true;
+    if (!reset) moreBtn.textContent = '加载中…';
+
+    const res = boardMode === 'overall'
+      ? await window.PTAPI.boardOverall(BOARD_PAGE, offset)
+      : await window.PTAPI.boardSnippet(sel.value, BOARD_PAGE, offset);
+    if (seq !== boardSeq) return;          // 已切榜/切关，丢弃旧响应
+
+    if (res && res.__moved) {
+      meLine.textContent = '⚠ 页面已过期（域名迁移），刷新页面后才能看到排行榜';
+      moreWrap.classList.add('hidden');
+      return;
+    }
+    if (!res || res.__error) {
+      meLine.textContent = '⚫ 排行榜服务不可用（离线模式）';
+      moreWrap.classList.add('hidden');
+      return;
+    }
+
+    const rows = res.rows || [];
+    if (reset) {
+      boardRows = [];
+      boardTotal = typeof res.total === 'number' ? res.total : rows.length;
+      table.innerHTML = `<tbody>${boardHeadHtml()}</tbody>`;
+      meLine.textContent = '';
+    }
+    if (rows.length) {
+      table.tBodies[0].insertAdjacentHTML('beforeend',
+        rows.map((r, i) => boardRowHtml(r, boardRows.length + i + 1)).join(''));
+      boardRows = boardRows.concat(rows);
+    }
+    empty.classList.toggle('hidden', boardRows.length > 0);
+
+    if (reset && boardMode === 'overall') {
+      if (res.me) meLine.textContent = `你的名次：第 ${res.me.rank} 名 · ★${res.me.stars} · ${res.me.xp} XP`;
+      else meLine.textContent = oj.logged_in ? '你还没有上榜成绩——去打通任意一关！' : '登录 xmuoj 后成绩才会上榜（回地图点右上角）';
+    }
+
+    const left = boardTotal - boardRows.length;
+    if (left > 0) {
+      moreBtn.disabled = false;
+      moreBtn.textContent = `加载更多（还有 ${left} 名）`;
+      moreWrap.classList.remove('hidden');
+      moreBtn.onclick = () => { SFX.click(); loadBoardPage(seq, false); };
+    } else {
+      moreWrap.classList.add('hidden');
+    }
+  }
 
   function allLevelOptions() {
     // 单关榜下拉：按模块分组（指法 / Python 各关 / C++ 各关 / 特训）+ 自定义包关卡
@@ -1182,53 +1275,22 @@
     const table = $('#board-table');
     const empty = $('#board-empty');
     const meLine = $('#board-me-line');
+    const seq = ++boardSeq;        // 作废上一页请求
+    boardRows = [];
+    boardTotal = 0;
     table.innerHTML = '';
     empty.classList.add('hidden');
+    $('#board-more-wrap').classList.add('hidden');
     meLine.textContent = '加载中…';
 
-    if (boardMode === 'overall') {
-      const res = await window.PTAPI.boardOverall();
-      if (res && res.__moved) { meLine.textContent = '⚠ 页面已过期（域名迁移），刷新页面后才能看到排行榜'; return; }
-      if (!res || res.__error) { meLine.textContent = '⚫ 排行榜服务不可用（离线模式）'; return; }
-      meLine.textContent = '';
-      const rows = res.rows || [];
-      if (!rows.length) empty.classList.remove('hidden');
-      table.innerHTML =
-        // 管理员多一列真名（real_name 只有管理员请求时后端才下发）
-        `<tr><th>#</th><th>勇者</th>${oj.admin ? '<th>姓名</th>' : ''}<th>总星数</th><th>战功XP</th><th>通关数</th><th>平均准确率</th></tr>` +
-        rows.map((r, i) => `
-          <tr${oj.user && r.user_id === oj.user.id ? ' class="me"' : ''}>
-            <td class="b-rank">${i + 1}</td>
-            <td class="b-name">${esc(r.username)}</td>${oj.admin ? `<td class="b-realname">${esc(r.real_name || '—')}</td>` : ''}
-            <td>★ ${r.stars}</td><td>${r.xp}</td><td>${r.clears}</td>
-            <td>${Math.round((r.avg_acc || 0) * 100)}%</td>
-          </tr>`).join('');
-      if (res.me) meLine.textContent = `你的名次：第 ${res.me.rank} 名 · ★${res.me.stars} · ${res.me.xp} XP`;
-      else meLine.textContent = oj.logged_in ? '你还没有上榜成绩——去打通任意一关！' : '登录 xmuoj 后成绩才会上榜（回地图点右上角）';
-    } else {
+    if (boardMode === 'snippet') {
       const sel = $('#board-snippet-select');
       const prev = sel.value; // 重建选项后尽量保住当前选择（onchange 也会触发本函数）
       sel.innerHTML = allLevelOptions();
       if (prev && [...sel.options].some(o => o.value === prev)) sel.value = prev;
-      const sid = sel.value;
-      if (!sid) { meLine.textContent = ''; return; }
-      const res = await window.PTAPI.boardSnippet(sid);
-      if (res && res.__moved) { meLine.textContent = '⚠ 页面已过期（域名迁移），刷新页面后才能看到排行榜'; return; }
-      if (!res || res.__error) { meLine.textContent = '⚫ 排行榜服务不可用（离线模式）'; return; }
-      meLine.textContent = '';
-      const rows = res.rows || [];
-      if (!rows.length) empty.classList.remove('hidden');
-      table.innerHTML =
-        `<tr><th>#</th><th>勇者</th>${oj.admin ? '<th>姓名</th>' : ''}<th>星级</th><th>WPM</th><th>准确率</th><th>耗时</th></tr>` +
-        rows.map((r, i) => `
-          <tr${oj.user && r.username === oj.user.username ? ' class="me"' : ''}>
-            <td class="b-rank">${i + 1}</td>
-            <td class="b-name">${esc(r.username)}</td>${oj.admin ? `<td class="b-realname">${esc(r.real_name || '—')}</td>` : ''}
-            <td>${'★'.repeat(r.stars)}</td><td>${r.wpm}</td>
-            <td>${Math.round((r.acc || 0) * 100)}%</td>
-            <td>${(r.ms / 1000).toFixed(1)}s</td>
-          </tr>`).join('');
+      if (!sel.value) { meLine.textContent = ''; return; }
     }
+    await loadBoardPage(seq, true);
   }
 
   // ─────────── 管理员 · 自定义关卡 ───────────
