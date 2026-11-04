@@ -236,24 +236,29 @@
   function stageStars(tier, lang) {
     return stageSnippets(tier, lang).reduce((n, s) => n + (Store.p.stars[s.id] || 0), 0);
   }
+  /** 已完成关数：拿到至少 1 星才算通关（0 星是没达标，不计进度）。 */
+  function doneCount(list) {
+    return list.reduce((n, s) => n + ((Store.p.stars[s.id] || 0) > 0 ? 1 : 0), 0);
+  }
 
   // ─────────── 世界地图 ───────────
-  // 大模型卡的目录：四个模块各一列，每讲一行（讲号 / 标题 / 关数 · 时长 · 星数）
+  // 大模型卡的目录：四个模块各一列，每讲一行（讲号 / 标题 / 已完成关数 · 时长 · 星数）
   function llmModColumns() {
     const mods = window.LLM_MODULES || [];
     return mods.map((m, mi) =>
       `<div class="llm-mod"><div class="llm-mod-name">${esc(m)}</div>` +
       llmLessons().filter(l => l.mod === mi).map(l => {
-        const got = llmOfLesson(l.no).reduce((n, s) => n + (Store.p.stars[s.id] || 0), 0);
+        const list = llmOfLesson(l.no);
+        const got = list.reduce((n, s) => n + (Store.p.stars[s.id] || 0), 0);
         return `<div class="llm-les" data-no="${l.no}">
           <span class="llm-les-no">讲${l.no}</span>
           <span class="llm-les-t">${esc(l.title)}</span>
-          <span class="llm-les-m">${l.n} 关 · ${l.mins}′ · ★${got}/${l.n * 3}</span>
+          <span class="llm-les-m">${doneCount(list)}/${l.n} 关 · ${l.mins}′ · ★${got}/${l.n * 3}</span>
         </div>`;
       }).join('') + '</div>').join('');
   }
 
-  // 语法题库卡的目录：四个模块各一列，每个实验一行（实验号 / 名称 / 题数 · 星数）。
+  // 语法题库卡的目录：四个模块各一列，每个实验一行（实验号 / 名称 / 已完成关数 · 星数）。
   // C++ 卡里有的模块一个实验都没有（例如「数据容器」没有 C++ 题解），空列直接不渲染。
   function bankModColumns(key) {
     const B = BANKS[key];
@@ -263,11 +268,12 @@
       if (!les.length) return '';
       return `<div class="llm-mod"><div class="llm-mod-name">${esc(m)}</div>` +
         les.map(l => {
-          const got = B.of(l.no).reduce((n, s) => n + (Store.p.stars[s.id] || 0), 0);
+          const list = B.of(l.no);
+          const got = list.reduce((n, s) => n + (Store.p.stars[s.id] || 0), 0);
           return `<div class="llm-les" data-no="${l.no}">
           <span class="llm-les-no">${esc(l.label)}</span>
           <span class="llm-les-t">${esc(l.title)}</span>
-          <span class="llm-les-m">${l.p} 题 · ★${got}/${l.n * 3}</span>
+          <span class="llm-les-m">${doneCount(list)}/${l.n} 关 · ★${got}/${l.n * 3}</span>
         </div>`;
         }).join('') + '</div>';
     }).join('');
@@ -291,14 +297,16 @@
       const cv = document.createElement('canvas');
       cv.width = 16; cv.height = 16; cv.className = 'pixel-canvas';
       PixelArt.draw(cv, BOSS_SPRITES[tier - 1]);
+      const list = stageSnippets(tier, lang);
       const stars = stageStars(tier, lang);
-      const maxStars = stageSnippets(tier, lang).length * 3;
+      const maxStars = list.length * 3;
+      const done = doneCount(list);
       node.innerHTML = `${unlocked ? '' : '<span class="node-lock">🔒</span>'}`;
       node.appendChild(cv);
       node.insertAdjacentHTML('beforeend',
         `<div class="node-name">${st.name}</div>
          <div class="node-sub">Boss:${st.boss}${bossKilled(tier, lang) ? ' ✅' : ''}</div>
-         <div class="node-stars">★ ${stars}/${maxStars}</div>`);
+         <div class="node-stars" title="已完成 ${done}/${list.length} 关；星星 ${stars}/${maxStars}">${done}/${list.length} 关 · ★ ${stars}/${maxStars}</div>`);
       if (unlocked) node.onclick = () => { SFX.click(); renderStage(tier, lang); };
       wrap.appendChild(node);
     };
@@ -307,10 +315,12 @@
     sec('⌨ 指法练习');
     const dojoNode = document.createElement('div');
     dojoNode.className = 'stage-node dojo-node';
-    const ftStars = ftLessons().reduce((n, s) => n + (Store.p.stars[s.id] || 0), 0);
+    const ftList = ftLessons();
+    const ftStars = ftList.reduce((n, s) => n + (Store.p.stars[s.id] || 0), 0);
+    const ftDone = doneCount(ftList);
     dojoNode.innerHTML = `<canvas class="pixel-canvas" width="16" height="16"></canvas>
       <div class="node-name">指法道场</div><div class="node-sub">TT 式渐进指法课</div>
-      <div class="node-stars">16 课 · ★ ${ftStars}/48</div>`;
+      <div class="node-stars" title="已完成 ${ftDone}/${ftList.length} 课；星星 ${ftStars}/${ftList.length * 3}">${ftDone}/${ftList.length} 课 · ★ ${ftStars}/${ftList.length * 3}</div>`;
     PixelArt.draw(dojoNode.querySelector('canvas'), 'hero');
     dojoNode.onclick = () => { SFX.click(); renderDojo(); };
     wrap.appendChild(dojoNode);
@@ -321,13 +331,14 @@
     llmNode.className = 'stage-node llm-node';
     const allLlm = llmLanes();
     const llmStars = allLlm.reduce((n, s) => n + (Store.p.stars[s.id] || 0), 0);
+    const llmDone = doneCount(allLlm);
     llmNode.innerHTML = `
       <div class="llm-head">
         <canvas class="pixel-canvas" width="16" height="16"></canvas>
         <div>
           <div class="node-name">从零手搓大模型</div>
           <div class="node-sub">16 讲 · ${allLlm.length} 关 · 代码全部取自 Karpathy 官方源码</div>
-          <div class="node-stars">★ ${llmStars}/${allLlm.length * 3}</div>
+          <div class="node-stars" title="已完成 ${llmDone}/${allLlm.length} 关；星星 ${llmStars}/${allLlm.length * 3}">${llmDone}/${allLlm.length} 关 · ★ ${llmStars}/${allLlm.length * 3}</div>
         </div>
       </div>
       <div class="llm-mods">${llmModColumns()}</div>`;
@@ -351,13 +362,14 @@
       const problems = lessons.reduce((n, l) => n + l.p, 0);
       const alts = lanes.filter(s => s.alt).length;
       const stars = lanes.reduce((n, s) => n + (Store.p.stars[s.id] || 0), 0);
+      const done = doneCount(lanes);
       node.innerHTML = `
       <div class="llm-head">
         <canvas class="pixel-canvas" width="16" height="16"></canvas>
         <div>
           <div class="node-name">${B.icon} ${esc(B.label)}</div>
           <div class="node-sub">${lessons.length} 个实验 · ${problems} 题 · ${lanes.length} 关${alts ? ` · 含 ${alts} 关同题多解法` : ''} · 代码取自每题参考题解</div>
-          <div class="node-stars">★ ${stars}/${lanes.length * 3}</div>
+          <div class="node-stars" title="已完成 ${done}/${lanes.length} 关；星星 ${stars}/${lanes.length * 3}">${done}/${lanes.length} 关 · ★ ${stars}/${lanes.length * 3}</div>
         </div>
       </div>
       <div class="llm-mods">${bankModColumns(key)}</div>`;
@@ -576,10 +588,11 @@
       const head = document.createElement('div');
       head.className = 'llm-sec';
       head.dataset.no = l.no;
-      const got = llmOfLesson(l.no).reduce((n, s) => n + (Store.p.stars[s.id] || 0), 0);
+      const llist = llmOfLesson(l.no);
+      const got = llist.reduce((n, s) => n + (Store.p.stars[s.id] || 0), 0);
       head.innerHTML = `<span class="llm-sec-no">讲${l.no}</span>
         <span class="llm-sec-t">${esc(l.title)}</span>
-        <span class="llm-sec-m">${esc(l.src)} · ${l.n} 关 · ★${got}/${l.n * 3}</span>`;
+        <span class="llm-sec-m">${esc(l.src)} · ${doneCount(llist)}/${l.n} 关 · ★${got}/${l.n * 3}</span>`;
       grid.appendChild(head);
       llmOfLesson(l.no).forEach(sn => {
         const card = document.createElement('div');
@@ -624,10 +637,11 @@
       const head = document.createElement('div');
       head.className = 'llm-sec';
       head.dataset.no = l.no;
-      const got = B.of(l.no).reduce((n, s) => n + (Store.p.stars[s.id] || 0), 0);
+      const llist = B.of(l.no);
+      const got = llist.reduce((n, s) => n + (Store.p.stars[s.id] || 0), 0);
       head.innerHTML = `<span class="llm-sec-no">${esc(l.label)}</span>
         <span class="llm-sec-t">${esc(l.title)}</span>
-        <span class="llm-sec-m">${esc(l.src)} · ${l.p} 题 · ★${got}/${l.n * 3}</span>`;
+        <span class="llm-sec-m">${esc(l.src)} · ${doneCount(llist)}/${l.n} 关 · ★${got}/${l.n * 3}</span>`;
       grid.appendChild(head);
       B.of(l.no).forEach(sn => {
         const card = document.createElement('div');
