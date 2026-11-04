@@ -197,9 +197,14 @@
   function llmOfLesson(no) { return llmLanes().filter(s => s.lesson === no); }
 
   // 语法题库按语言分成两张卡（data/pybank.js / data/cppbank.js），同样不进 window.SNIPPETS。
+  // Python 实验七「函数」的参考解在 pybank_override.js 里按 id 覆盖（原解没定义函数）；
   // C++ 卡另有一份手工补充（data/cppbank_extra.js：实验四/五/七），合并后按实验号/关卡 id 排序。
   function pyLessons() { return window.PY_LESSONS || []; }
-  function pyLanes() { return window.PY_SNIPPETS || []; }
+  function pyLanes() {
+    const fixes = window.PY_CODE_FIXES || {};
+    return (window.PY_SNIPPETS || []).map(s =>
+      fixes[s.id] ? Object.assign({}, s, { code: fixes[s.id] }) : s);
+  }
   function pyOfLesson(no) { return pyLanes().filter(s => s.lesson === no); }
   function cppLessons() {
     return (window.CPPQ_LESSONS || []).concat(window.CPPQ_EXTRA_LESSONS || [])
