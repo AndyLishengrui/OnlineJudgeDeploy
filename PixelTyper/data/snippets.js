@@ -298,29 +298,29 @@ window.SNIPPETS = [
   "id": "c-array-max",
   "title": "数组找最大",
   "tier": 4,
-  "code": "#include <stdio.h>\n\nint main(void) {\n    int a[5] = {3, 1, 4, 1, 5};\n    int i, max = a[0];\n    for (i = 1; i < 5; i++) {\n        if (a[i] > max) {\n            max = a[i];\n        }\n    }\n    printf(\"max=%d\\n\", max);\n    return 0;\n}",
-  "hint": "一维数组初始化用花括号，for 循环三要素之间是分号不是逗号，下标从 0 开始。"
+  "code": "#include <stdio.h>\n\nint find_max(int a[], int n) {\n    int m = a[0];\n    for (int i = 1; i < n; i++) {\n        if (a[i] > m) m = a[i];\n    }\n    return m;\n}\n\nint main(void) {\n    int a[5] = {3, 1, 4, 1, 5};\n    printf(\"max=%d\\n\", find_max(a, 5));\n    return 0;\n}",
+  "hint": "先定义 find_max 函数再在 main 里调用；数组参数传首地址，for 循环三要素之间是分号。"
  },
  {
   "id": "c-string-cat",
   "title": "字符串拼接",
   "tier": 4,
-  "code": "#include <stdio.h>\n#include <string.h>\n\nint main(void) {\n    char s1[20] = \"hello\";\n    char s2[20] = \"_world\";\n    strcat(s1, s2);\n    printf(\"len=%d\\n\", (int)strlen(s1));\n    printf(\"%s\\n\", s1);\n    return 0;\n}",
-  "hint": "用 strcat 和 strlen 必须包含 string.h；字符数组用双引号赋值，%s 对应字符串。"
+  "code": "#include <stdio.h>\n#include <string.h>\n\nvoid my_strcat(char dst[], char src[]) {\n    int i = (int)strlen(dst);\n    int j = 0;\n    while (src[j] != '\\0') {\n        dst[i++] = src[j++];\n    }\n    dst[i] = '\\0';\n}\n\nint main(void) {\n    char s1[20] = \"hello\";\n    char s2[20] = \"_world\";\n    my_strcat(s1, s2);\n    printf(\"len=%d\\n\", (int)strlen(s1));\n    printf(\"%s\\n\", s1);\n    return 0;\n}",
+  "hint": "自己写 my_strcat 函数：先用 strlen 找到末尾，再逐字符复制并补 '\\0'；字符数组用双引号赋值。"
  },
  {
   "id": "c-pointer-swap",
   "title": "指针改值",
   "tier": 4,
-  "code": "#include <stdio.h>\n\nint main(void) {\n    int x = 42;\n    int *p = &x;\n    *p = *p + 8;\n    printf(\"x=%d\\n\", x);\n    printf(\"addr=%p\\n\", (void *)p);\n    return 0;\n}",
-  "hint": "& 取地址、* 解引用，两个符号方向相反别敲混；%p 用来打印地址。"
+  "code": "#include <stdio.h>\n\nvoid add_eight(int *p) {\n    *p = *p + 8;\n}\n\nint main(void) {\n    int x = 42;\n    int *p = &x;\n    add_eight(p);\n    printf(\"x=%d\\n\", x);\n    printf(\"addr=%p\\n\", (void *)p);\n    return 0;\n}",
+  "hint": "函数参数写成 int *p 接收地址，函数体里用 *p 改值；& 取地址，%p 打印地址。"
  },
  {
   "id": "c-struct-point",
   "title": "结构体坐标",
   "tier": 4,
-  "code": "#include <stdio.h>\n\nstruct Point {\n    int x;\n    int y;\n};\n\nint main(void) {\n    struct Point p = {3, 4};\n    p.x += 1;\n    p.y *= 2;\n    printf(\"(%d,%d)\\n\", p.x, p.y);\n    return 0;\n}",
-  "hint": "结构体定义末尾的花括号后必须有分号；成员访问用点号，+= 和 *= 是复合赋值。"
+  "code": "#include <stdio.h>\n\nstruct Point {\n    int x;\n    int y;\n};\n\nvoid move_point(struct Point *p) {\n    p->x += 1;\n    p->y *= 2;\n}\n\nint main(void) {\n    struct Point p = {3, 4};\n    move_point(&p);\n    printf(\"(%d,%d)\\n\", p.x, p.y);\n    return 0;\n}",
+  "hint": "结构体指针用 -> 访问成员；函数收到地址，调用时写 move_point(&p)；结构体定义末尾别忘了分号。"
  },
  {
   "id": "c-gcd-euclid",

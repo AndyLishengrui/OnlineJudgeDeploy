@@ -20,6 +20,9 @@
 > Python 语法题库「实验七 函数」原有 16 关参考解没有定义函数 → 用 **`data/pybank_override.js`**
 > 按关卡 id 覆盖为 `def` 函数式写法（20 关全部含函数；已用 OJ 官方样例逐题核对输入输出）。
 > 重新生成：`python3 data/build_pyfunc_override.py`（会重新校验 16 关 old/new 输出并写回覆盖文件）。
+> 同日 C++：五大关 tier4「函数圣殿」5 关全部改成独立函数（`find_max/my_strcat/add_eight/move_point`）；
+> C++ 语法题库实验七从 3 关扩到 **20 关**，与 Python P01-P08 / T01-T12 一一对应，全部用函数，
+> 生成/校验脚本 `data/build_cppbank_extra.py`（C++ 卡现为 **8 实验 / 42 关**）。
 
 附加：特训营地（tier 0 符号/数字训练）、每日挑战、排行榜（复用 OJ 账号）、老师自定义关卡包（管理员在线编辑 JSON 发布）。
 
