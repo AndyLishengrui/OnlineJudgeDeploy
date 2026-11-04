@@ -18,6 +18,7 @@
     3: { wpm3: 38, acc3: 0.96, wpm2: 26, acc2: 0.90 },
     4: { wpm3: 36, acc3: 0.96, wpm2: 25, acc2: 0.88 },
     5: { wpm3: 34, acc3: 0.95, wpm2: 24, acc2: 0.88 },
+    6: { wpm3: 32, acc3: 0.95, wpm2: 23, acc2: 0.87 },  // 面向对象（代码更长，门槛略降）
   };
 
   class TypingSession {

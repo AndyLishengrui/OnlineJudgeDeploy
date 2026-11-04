@@ -256,7 +256,7 @@ window.SNIPPETS = [
   "id": "c-ternary-max",
   "title": "三目求最大",
   "tier": 2,
-  "code": "#include <stdio.h>\n\nint main(void) {\n    int a = 12, b = 20;\n    int max = (a > b) ? a : b;\n    char *s = (a % 2) ? \"odd\" : \"even\";\n    printf(\"max = %d, %s\\n\", max, s);\n    return 0;\n}",
+  "code": "#include <stdio.h>\n\nint main(void) {\n    int a = 12, b = 20;\n    int max = (a > b) ? a : b;\n    const char *s = (a % 2) ? \"odd\" : \"even\";\n    printf(\"max = %d, %s\\n\", max, s);\n    return 0;\n}",
   "hint": "三目运算符的 ? 和 : 必须成对出现，(a % 2) 非零即真。"
  },
  {
@@ -556,5 +556,126 @@ window.SNIPPETS = [
   "lane": "ft",
   "code": "the quick brown fox jumps over the lazy dog the quick brown fox jumps over the lazy dog the quick brown fox jumps over the lazy dog how vexingly quick daft zebras jump tonight how vexingly quick daft zebras jump tonight pack my box with five dozen liquor jugs pack my box with five dozen liquor jugs the quick brown fox jumps over the lazy dog",
   "hint": "三句话含全部 26 个字母。目标：30 WPM、准确率 96% 以上，指法毕业！"
- }
+ },
+
+  {
+   "id": "py-gcd-lcm",
+   "title": "最大公约数与最小公倍数",
+   "tier": 5,
+   "code": "def gcd(a, b):\n    while b:\n        a, b = b, a % b\n    return a\n\na, b = map(int, input().split())\ng = gcd(a, b)\nprint(g, a * b // g)",
+   "hint": "函数里 while b: 等价于 while b != 0；a, b = b, a % b 同步赋值别漏逗号，// 是整除。"
+  },
+  {
+   "id": "c-cin-cout",
+   "title": "标准输入输出",
+   "tier": 1,
+   "code": "#include <iostream>\nusing namespace std;\n\nint main() {\n    int a, b;\n    cin >> a >> b;\n    cout << a + b << endl;\n    return 0;\n}",
+   "hint": "cin 用 >> 连续读，cout 用 << 输出；using namespace std; 末尾分号别漏。"
+  },
+  {
+   "id": "c-const-area",
+   "title": "常量与圆面积",
+   "tier": 1,
+   "code": "#include <cstdio>\n\nint main() {\n    const double PI = 3.14159;\n    double r;\n    scanf(\"%lf\", &r);\n    printf(\"%.2f\\n\", PI * r * r);\n    return 0;\n}",
+   "hint": "double 用 %lf 读入、%f 输出；const 常量定义后不能再赋值，%.2f 控制两位小数。"
+  },
+  {
+   "id": "c-triangle-check",
+   "title": "三角形判定",
+   "tier": 2,
+   "code": "#include <cstdio>\n\nint main() {\n    int a, b, c;\n    scanf(\"%d%d%d\", &a, &b, &c);\n    if (a + b > c && a + c > b && b + c > a)\n        printf(\"yes\\n\");\n    else\n        printf(\"no\\n\");\n    return 0;\n}",
+   "hint": "三个条件必须同时成立 &&；else 与 if 配对别错位，缩进只是给人看的。"
+  },
+  {
+   "id": "c-abs-value",
+   "title": "绝对值",
+   "tier": 2,
+   "code": "#include <cstdio>\n\nint main() {\n    int n;\n    scanf(\"%d\", &n);\n    if (n < 0) n = -n;\n    printf(\"%d\\n\", n);\n    return 0;\n}",
+   "hint": "单个 if 不用 else；取负号 -n 别写成 n-；比较用 <，别把赋值 = 当判断。"
+  },
+  {
+   "id": "c-char-grade",
+   "title": "字符分类",
+   "tier": 2,
+   "code": "#include <cstdio>\n\nint main() {\n    char ch;\n    scanf(\"%c\", &ch);\n    if (ch >= '0' && ch <= '9')\n        printf(\"digit\\n\");\n    else if (ch >= 'a' && ch <= 'z')\n        printf(\"lower\\n\");\n    else\n        printf(\"other\\n\");\n    return 0;\n}",
+   "hint": "字符用单引号 '0'，比较的是 ASCII 码；&& 两侧条件都要写完整。"
+  },
+  {
+   "id": "c-while-digits",
+   "title": "数位统计",
+   "tier": 3,
+   "code": "#include <cstdio>\n\nint main() {\n    int n, cnt = 0, sum = 0;\n    scanf(\"%d\", &n);\n    while (n > 0) {\n        int d = n % 10;\n        sum += d;\n        cnt++;\n        n /= 10;\n    }\n    printf(\"%d %d\\n\", cnt, sum);\n    return 0;\n}",
+   "hint": "while 里先取末位 %10 再 /10 去掉末位；变量初始化为 0 别漏，/= 是复合赋值。"
+  },
+  {
+   "id": "py-oop-class",
+   "title": "类与对象",
+   "tier": 6,
+   "code": "class Dog:\n    def bark(self):\n        return \"woof\"\n\nd = Dog()\nprint(d.bark())",
+   "hint": "class 名首字母大写；实例方法第一个参数固定写 self，调用时不用传。"
+  },
+  {
+   "id": "py-oop-init",
+   "title": "构造方法",
+   "tier": 6,
+   "code": "class Student:\n    def __init__(self, name, score):\n        self.name = name\n        self.score = score\n\ns = Student(\"Ann\", 92)\nprint(s.name, s.score)",
+   "hint": "__init__ 前后各两条下划线（Shift+减号打 _）；self.属性 = 参数 是绑定的关键。"
+  },
+  {
+   "id": "py-oop-method",
+   "title": "实例方法",
+   "tier": 6,
+   "code": "class Counter:\n    def __init__(self):\n        self.n = 0\n\n    def add(self, k):\n        self.n += k\n        return self.n\n\nc = Counter()\nprint(c.add(3), c.add(4))",
+   "hint": "方法里改的是 self.n；return self.n 让调用处能直接打印，缩进层次别乱。"
+  },
+  {
+   "id": "py-oop-inherit",
+   "title": "继承与多态",
+   "tier": 6,
+   "code": "class Animal:\n    def speak(self):\n        return \"...\"\n\nclass Cat(Animal):\n    def speak(self):\n        return \"meow\"\n\nprint(Cat().speak())",
+   "hint": "子类括号里写父类名；重写同名方法即可多态，注意调用时要加括号。"
+  },
+  {
+   "id": "py-oop-magic",
+   "title": "魔术方法",
+   "tier": 6,
+   "code": "class Point:\n    def __init__(self, x, y):\n        self.x = x\n        self.y = y\n\n    def __str__(self):\n        return f\"({self.x}, {self.y})\"\n\n    def __add__(self, o):\n        return Point(self.x + o.x, self.y + o.y)\n\nprint(Point(1, 2) + Point(3, 4))",
+   "hint": "__str__ 决定 print(对象) 的输出，__add__ 让 + 作用于对象；f-string 的花括号是易错组合。"
+  },
+  {
+   "id": "c-oop-class",
+   "title": "类与对象",
+   "tier": 6,
+   "code": "#include <iostream>\nusing namespace std;\n\nclass Dog {\npublic:\n    void bark() {\n        cout << \"woof\" << endl;\n    }\n};\n\nint main() {\n    Dog d;\n    d.bark();\n    return 0;\n}",
+   "hint": "class 定义末尾必须有分号；public: 之后才是类外能调用的成员。"
+  },
+  {
+   "id": "c-oop-ctor",
+   "title": "构造函数",
+   "tier": 6,
+   "code": "#include <iostream>\nusing namespace std;\n\nclass Point {\npublic:\n    Point(int a, int b) : x(a), y(b) {}\n    void show() { cout << x << \" \" << y << endl; }\nprivate:\n    int x, y;\n};\n\nint main() {\n    Point p(3, 4);\n    p.show();\n    return 0;\n}",
+   "hint": "构造函数名与类名相同、没有返回类型；: x(a), y(b) 是初始化列表，private 成员只能由类内方法访问。"
+  },
+  {
+   "id": "c-oop-encap",
+   "title": "封装与成员函数",
+   "tier": 6,
+   "code": "#include <iostream>\nusing namespace std;\n\nclass Counter {\npublic:\n    void add(int k) { n += k; }\n    int get() const { return n; }\nprivate:\n    int n = 0;\n};\n\nint main() {\n    Counter c;\n    c.add(3);\n    c.add(4);\n    cout << c.get() << endl;\n    return 0;\n}",
+   "hint": "成员变量可原地初始化 int n = 0；const 成员函数不能改成员；private 区在类外不能直接访问。"
+  },
+  {
+   "id": "c-oop-inherit",
+   "title": "继承与虚函数",
+   "tier": 6,
+   "code": "#include <iostream>\nusing namespace std;\n\nclass Animal {\npublic:\n    virtual void speak() { cout << \"...\" << endl; }\n    virtual ~Animal() {}\n};\n\nclass Cat : public Animal {\npublic:\n    void speak() override { cout << \"meow\" << endl; }\n};\n\nint main() {\n    Animal* a = new Cat();\n    a->speak();\n    delete a;\n    return 0;\n}",
+   "hint": "虚函数前加 virtual，子类写 override；通过父类指针调用才会多态；delete 前要有 virtual 析构。"
+  },
+  {
+   "id": "c-oop-overload",
+   "title": "运算符重载",
+   "tier": 6,
+   "code": "#include <iostream>\nusing namespace std;\n\nclass Point {\npublic:\n    Point(int a, int b) : x(a), y(b) {}\n    Point operator+(const Point& o) const {\n        return Point(x + o.x, y + o.y);\n    }\n    void show() { cout << \"(\" << x << \",\" << y << \")\" << endl; }\nprivate:\n    int x, y;\n};\n\nint main() {\n    Point a(1, 2), b(3, 4);\n    (a + b).show();\n    return 0;\n}",
+   "hint": "operator+ 返回新对象；const Point& 用引用传参避免拷贝；成员函数后的 const 表示不修改自身。"
+  }
+ 
 ];

@@ -352,6 +352,29 @@
       ].map(r => r.replace(/f/g, 'y'))],
     },
 
+    // ── Boss 6 · 抽象魔王（class 之主）──
+    classlord: {
+      pal: { k: C.k, v: C.v, P: C.P },
+      frames: [[
+        '................',
+        '....vv....vv....',
+        '...vvvv..vvvv...',
+        '..vvvvvvvvvvvv..',
+        '.vvkkvvvvvvkkvv.',
+        '.vvkkvvvvvvkkvv.',
+        '..vvvvvvvvvvvv..',
+        '..vvvvvvvvvvvv..',
+        '.vvvvvvvvvvvvvv.',
+        '.vvvPPPPPPPPvvv.',
+        '.vvvPkkkkkkPvvv.',
+        '..vvPPPPPPPPvv..',
+        '...vvvvvvvvvv...',
+        '....vvvvvvvv....',
+        '...vv......vv...',
+        '................',
+      ]],
+    },
+
     // ── 训练营小图标（哑铃兽）──
     drill: {
       pal: { k: C.k, B: C.B, l: C.l, y: C.y },

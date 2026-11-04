@@ -12,7 +12,7 @@
 
 | 模式 | 说明 |
 |---|---|
-| 五大关 | 顺序平原 → 分支峡谷 → 循环回廊 → 函数圣殿 → 编译终局，每关 4~12 个小关卡（Python/C 混合） |
+| 六大关 | 顺序平原 → 分支峡谷 → 循环回廊 → 函数圣殿 → 编译终局 → 对象圣殿（OOP），每关 5~7 个小关卡（Python / C++ 分开闯关） |
 | Boss 战 | 每大关最后一关：限时 + 血条。敲对 = 攻击 Boss，敲错 = 扣自己血 |
 | 特训营地 | 符号专项（括号/运算符/引号转义）、数字专项、高频短句 |
 | 每日挑战 | 按日期出题，双倍 XP，连续打卡有成就 |
@@ -41,7 +41,7 @@
 [{"title": "输出练习", "tier": 1, "lang": "py", "hint": "注意引号", "code": "print('hi')"}]
 ```
 
-- `tier`：0=专项训练 / 1~5=难度（决定评星门槛，新手用 1）
+- `tier`：0=专项训练 / 1~6=难度（决定评星门槛，新手用 1；6=面向对象）
 - `lang`：`py` / `c` / `drill`（仅影响卡片标签配色）
 - `code`：**必须纯 ASCII**（不能有中文标点），≤60 行，每行 ≤80 字符
 - 每包最多 30 关；删除包不会影响已有的学生成绩记录
@@ -53,7 +53,7 @@ cd PixelTyper
 python3 -m http.server 8899     # 打开 http://localhost:8899（无后端时自动降级本地模式）
 ```
 
-题库在 `data/snippets.js`（`{id, title, tier 0~5, code, hint}`，code 必须纯 ASCII），
+题库在 `data/snippets.js`（`{id, title, tier 0~6, code, hint}`，code 必须纯 ASCII），
 文案在 `data/flavor.js`。改完直接刷新页面即可。
 
 部署：`./deploy.sh`（打包 → 上传 → docker cp 进 oj-backend → curl 验证）

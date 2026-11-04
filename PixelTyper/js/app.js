@@ -7,7 +7,7 @@
   const $ = sel => document.querySelector(sel);
   const $$ = sel => [...document.querySelectorAll(sel)];
 
-  const BOSS_SPRITES = ['slime', 'ghost', 'golem', 'wizard', 'dragon'];
+  const BOSS_SPRITES = ['slime', 'ghost', 'golem', 'wizard', 'dragon', 'classlord'];
 
   // HTML 转义（排行榜显示学生真实姓名、管理端显示包内容，必须转义）
   const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g,
@@ -178,7 +178,7 @@
 
   // ─────────── 题库组织 ───────────
   // 三大模块：指法练习（lane=ft）/ Python 关卡（py-*）/ C++ 关卡（c-*），互不混排
-  // stage(tier 1..5, lang) = 该 tier 该语言全部片段；Boss 关 = 其中代码最长者
+  // stage(tier 1..6, lang) = 该 tier 该语言全部片段；Boss 关 = 其中代码最长者
   function langOf(s) { return s.id.startsWith('py-') ? 'py' : s.id.startsWith('c-') ? 'c' : 'drill'; }
   function langName(l) { return l === 'py' ? 'Python' : 'C++'; }
   function stageSnippets(tier, lang) {
@@ -196,12 +196,19 @@
   function llmLanes() { return window.LLM_SNIPPETS || []; }
   function llmOfLesson(no) { return llmLanes().filter(s => s.lesson === no); }
 
-  // 语法题库按语言分成两张卡（data/pybank.js / data/cppbank.js），同样不进 window.SNIPPETS
+  // 语法题库按语言分成两张卡（data/pybank.js / data/cppbank.js），同样不进 window.SNIPPETS。
+  // C++ 卡另有一份手工补充（data/cppbank_extra.js：实验四/五/七），合并后按实验号/关卡 id 排序。
   function pyLessons() { return window.PY_LESSONS || []; }
   function pyLanes() { return window.PY_SNIPPETS || []; }
   function pyOfLesson(no) { return pyLanes().filter(s => s.lesson === no); }
-  function cppLessons() { return window.CPPQ_LESSONS || []; }
-  function cppLanes() { return window.CPPQ_SNIPPETS || []; }
+  function cppLessons() {
+    return (window.CPPQ_LESSONS || []).concat(window.CPPQ_EXTRA_LESSONS || [])
+      .sort((a, b) => a.no - b.no);
+  }
+  function cppLanes() {
+    return (window.CPPQ_SNIPPETS || []).concat(window.CPPQ_EXTRA_SNIPPETS || [])
+      .sort((a, b) => (a.id < b.id ? -1 : a.id > b.id ? 1 : 0));
+  }
   function cppOfLesson(no) { return cppLanes().filter(s => s.lesson === no); }
 
   // 两张卡的数据形状完全一样，渲染只写一份。tier 用来占 curStageTier 的负哨兵。
@@ -610,7 +617,7 @@
     const nProb = lessons.reduce((n, l) => n + l.p, 0);
     $('#stage-desc').textContent = key === 'py'
       ? `${lessons.length} 个实验 · ${nProb} 题，代码取自每题的 Python 参考题解：从新手村的 A+B 一路打到函数与字典。按实验分节，过一关就能接着打下一关。`
-      : `只收题库里已经有 C++ 参考题解的 ${nProb} 道题（${lessons.length} 个实验），代码就是那份 solution.cpp。按实验分节，过一关就能接着打下一关。`;
+      : `共 ${lessons.length} 个实验 · ${nProb} 题：收题库里有 C++ 参考题解的题，缺实验的代表性关卡已手工补写。按实验分节，过一关就能接着打下一关。`;
     const grid = $('#level-grid');
     grid.innerHTML = '';
     lessons.forEach(l => {
@@ -1093,7 +1100,8 @@
     if (gameCtx.boss) {
       unlock('first-blood');
       if (stats.errors === 0) unlock('flawless-boss');
-      if (['py', 'c'].every(l => [1, 2, 3, 4, 5].every(t => bossKilled(t, l)))) unlock('all-stages');
+      const allTiers = Array.from({ length: (window.FLAVOR.stages || []).length }, (_, i) => i + 1);
+      if (['py', 'c'].every(l => allTiers.every(t => bossKilled(t, l)))) unlock('all-stages');
     }
     if (stats.maxCombo >= 50) unlock('combo-50');
     if (stats.maxCombo >= 200) unlock('combo-200');
@@ -1227,7 +1235,8 @@
       opts.push(`<optgroup label="⌨ 指法道场">` +
         ft.map(s => `<option value="${esc(s.id)}">${esc(s.title)}</option>`).join('') + '</optgroup>');
     }
-    for (let t = 1; t <= 5; t++) {
+    const stageCount = (window.FLAVOR.stages || []).length;
+    for (let t = 1; t <= stageCount; t++) {
       ['py', 'c'].forEach(l => {
         const list = stageSnippets(t, l);
         if (!list.length) return;
@@ -1337,7 +1346,7 @@
       if (lines.length > 60) throw new Error(`${no}：超过 60 行`);
       if (Math.max(...lines.map(l => l.length)) > 80) throw new Error(`${no}：有行超过 80 字符`);
       const tier = s.tier == null ? 1 : Number(s.tier);
-      if (!Number.isInteger(tier) || tier < 0 || tier > 5) throw new Error(`${no}：tier 必须是 0~5 的整数（0=专项训练，1~5=难度）`);
+      if (!Number.isInteger(tier) || tier < 0 || tier > 6) throw new Error(`${no}：tier 必须是 0~6 的整数（0=专项训练，1~6=难度）`);
       const lang = s.lang || 'py';
       if (!['py', 'c', 'drill'].includes(lang)) throw new Error(`${no}：lang 必须是 py / c / drill`);
       return { title, tier, lang, code, hint: String(s.hint || '').slice(0, 120) };

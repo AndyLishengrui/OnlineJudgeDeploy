@@ -198,7 +198,7 @@ def validate_score(body):
         raise BadInput("snippet_id 不合法")
     s = {
         "snippet_id": sid,
-        "tier": _num(body, "tier", 0, 5),
+        "tier": _num(body, "tier", 0, 6),   # 6 = 面向对象大关（2026-11-04 新增）
         "chars": _num(body, "chars", MIN_CHARS, MAX_CHARS),
         "stars": _num(body, "stars", 1, 3),
         "wpm": _num(body, "wpm", 1, MAX_WPM),
@@ -233,8 +233,8 @@ def validate_snippet(s, idx):
     if max(len(l) for l in lines) > 80:
         raise BadInput(no + "：有行超过 80 字符")
     tier = s.get("tier", 1)
-    if isinstance(tier, bool) or not isinstance(tier, int) or not (0 <= tier <= 5):
-        raise BadInput(no + "：tier 必须是 0~5 的整数")
+    if isinstance(tier, bool) or not isinstance(tier, int) or not (0 <= tier <= 6):
+        raise BadInput(no + "：tier 必须是 0~6 的整数")
     lang = s.get("lang", "py")
     if lang not in ("py", "c", "drill"):
         raise BadInput(no + "：lang 必须是 py / c / drill")
