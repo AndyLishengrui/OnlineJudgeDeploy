@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""把《从零手搓大模型》的 16 讲跟打关卡生成成 data/llm.js。
+"""把《从零手搓大模型》的 20 讲跟打关卡生成成 data/llm.js。
 
 代码不是手抄的：每关都直接切自 Zero2hero/_01_官方源码 里的官方 notebook / 库文件，
 行号对应「把 notebook 的 code cell 按 '\\n\\n# ===== CELL =====\\n' 拼起来」后的行号
@@ -31,9 +31,15 @@ SRC = {
     'NN': Z2H + '/_01_官方源码/micrograd/micrograd/nn.py',
     'BS': Z2H + '/_01_官方源码/minbpe/minbpe/base.py',
     'BB': Z2H + '/_01_官方源码/minbpe/minbpe/basic.py',
+    'RE': Z2H + '/_01_官方源码/minbpe/minbpe/regex.py',
+    'G4': Z2H + '/_01_官方源码/minbpe/minbpe/gpt4.py',
+    'NG_M': Z2H + '/_01_官方源码/nanoGPT/model.py',
+    'NG_T': Z2H + '/_01_官方源码/nanoGPT/train.py',
+    'NG_S': Z2H + '/_01_官方源码/nanoGPT/sample.py',
+    'G2': Z2H + '/_01_官方源码/build-nanogpt/train_gpt2.py',
 }
 
-MODULES = ['计算图与梯度', '语言模型基座', '反传与结构', 'GPT 与分词']
+MODULES = ['计算图与梯度', '语言模型基座', '反传与结构', 'GPT 与分词', 'GPT-2 工程实战']
 
 # 每讲：no 讲次 / mod 模块下标 / title / src 对应原片 / mins 视频分钟 / levels 关卡
 # 关卡 = (标题, 提示, 源文件, 起始行, 结束行)  —— 行号含两端，对应拼平后的 notebook
@@ -50,6 +56,7 @@ LESSONS = [
         ('幂运算的梯度', 'x**n 求导得 n·x**(n-1)，后面连乘、连除全靠它。', 'EN', 35, 43),
         ('ReLU 与它的反向', 'ReLU 只在正半边放行，梯度是 0 或 1。', 'EN', 45, 52),
         ('减法、除法、取负', 'Python 的运算符都要补齐，否则 a - b 写不出来。', 'EN', 72, 79),
+        ('右操作数：__rsub__ / __rmul__ / __rtruediv__', '2 - a 走到的是 other 的 __rsub__，方向反了别写错。', 'EN', 81, 94),
     ]),
     dict(no=3, mod=0, title='反向传播与 nn.Module', src='L1 后半', mins=45, levels=[
         ('backward：先排拓扑序', '先把整张图按依赖关系排好序，才谈得上从后往前传。', 'EN', 55, 65),
@@ -66,12 +73,14 @@ LESSONS = [
         ('前向传播一次', 'one-hot 乘 W 得 logits，softmax 得概率。', 'P1', 219, 228),
         ('逐样本算负对数似然', '取对数、变负数、取平均——loss 就是这么来的。', 'P1', 234, 254),
         ('用训练好的 W 采样', '每次按概率抽一个字符，抽到 . 就停。', 'P1', 330, 355),
+        ('训练集与 W 初始化', '相邻字符对攒成索引列表，27×27 的 W 就是全部参数。', 'P1', 293, 309),
     ]),
     dict(no=5, mod=1, title='损失函数：为什么是交叉熵', src='新编', mins=28, levels=[
         ('对数似然逐对累加', '概率连乘容易下溢，取对数就变成连加。', 'P1', 131, 143),
         ('平均负对数似然', '除以样本数取平均，loss 就跟数据量无关了。', 'P1', 145, 149),
         ('向量化求 loss', '一次算完整个 batch：probs[arange, ys].log().mean()。', 'P1', 269, 276),
         ('正则化 + 反向 + 更新', '加一项 W² 惩罚，再走一步梯度下降。', 'P1', 320, 328),
+        ('梯度下降主循环', '前向算概率、交叉熵算损失、反向、更新——训练就是这四步转圈。', 'P1', 312, 328),
     ]),
     dict(no=6, mod=1, title='MLP 上：训练集、验证集与嵌入', src='L3 前半 · 1:15', mins=42, levels=[
         ('build_dataset：滑窗造样本', '三个字符预测第四个，窗口一格一格往右挪。', 'P2', 48, 68),
@@ -88,6 +97,7 @@ LESSONS = [
         ('反向 + 更新 + 学习率衰减', '十万步之后把学习率降到 1/10，损失会再掉一档。', 'P2', 164, 178),
         ('训练集损失', '整份训练集一次前向，看拟合到什么程度。', 'P2', 185, 190),
         ('验证集损失', '同一套参数换验证集，和训练集差多少就是过拟合的量。', 'P2', 192, 197),
+        ('用训练好的 MLP 起名', '窗口一格一格往右挪，采到句号就收工。', 'P2', 218, 236),
     ]),
     dict(no=8, mod=1, title='梯度三关：消失、爆炸、死亡', src='L4 前段 · 1:55', mins=30, levels=[
         ('Kaiming 初始化与零 bias', '权重除以 sqrt(fan_in)，bias 可以直接不要。', 'P3', 56, 65),
@@ -102,6 +112,10 @@ LESSONS = [
         ('Linear：手工实现一层', '跟 PyTorch 的 nn.Linear 同一个接口，只是自己写一遍。', 'P3', 169, 182),
         ('BatchNorm1d：训练时用批统计', '训练走一批的均值方差，顺手更新 running。', 'P3', 198, 207),
         ('BatchNorm1d：推理时用 running', '推理没有 batch 可言，只能靠训练时攒下的统计量。', 'P3', 208, 216),
+        ('BatchNorm1d：__init__', 'gamma/beta 是真参数，running 均值方差只是带走的统计量。', 'P3', 185, 196),
+        ('六层堆叠：Linear-BN-Tanh', '同一条三连件重复五次，收尾层只要 Linear + BN。', 'P3', 225, 237),
+        ('训练循环：minibatch 三步', '抽一批 → 过一遍层 → 反向 → 按 lr 更新。', 'P3', 268, 291),
+        ('采样：BN 网络版', '训练完把层切到 eval，再让窗口滚动生成 20 个名字。', 'P3', 378, 402),
     ]),
     dict(no=10, mod=2, title='反向传播 Ninja 上：手推全网络', src='L5 前半 · 1:55', mins=48, levels=[
         ('把前向拆成一步一变量', '每一步只做一件事，才可能一步步往回求导。', 'P4', 100, 117),
@@ -110,6 +124,9 @@ LESSONS = [
         ('loss → probs 的梯度', '只有一个位置有梯度：正确字符那一格是 -1/n。', 'P4', 144, 149),
         ('probs → logits 的梯度', '商的求导法则，穿过 softmax 的三步。', 'P4', 150, 154),
         ('logits → h → hpreact', '矩阵乘法的反向就是转置相乘。', 'P4', 155, 158),
+        ('cmp：手算梯度对账', '自己推的梯度和 autograd 的差多少，一个函数全说清。', 'P4', 60, 65),
+        ('全部参数一次备齐', '两层 MLP + 一对 BN 参数，requires_grad 逐个开。', 'P4', 68, 90),
+        ('训练循环：前向逐变量', '每个中间量都起名字存下来，待会反向才好对账。', 'P4', 331, 354),
     ]),
     dict(no=11, mod=2, title='反向传播 Ninja 下：逐层对账', src='L5 后半', mins=48, levels=[
         ('BN 的 gain / bias / raw', 'BN 有三个输入，每个都要单独求一份梯度。', 'P4', 159, 161),
@@ -118,6 +135,8 @@ LESSONS = [
         ('回到 W1 与 b1', '一路传回第一层线性层。', 'P4', 171, 173),
         ('散回嵌入矩阵 C', '同一个字符出现在多个位置，梯度要累加。', 'P4', 174, 179),
         ('和 PyTorch 逐项对账', '每个中间量都跟 autograd 比一遍，误差要在 1e-6 以内。', 'P4', 180, 200),
+        ('手推反向：输出层到 tanh', 'dlogits 一步到位，顺着 W2、tanh 一路穿回 BN。', 'P4', 361, 379),
+        ('嵌入散回 + 手动更新', '同一个字符出现多次，梯度必须加回去；不靠 autograd 也能更新。', 'P4', 380, 399),
     ]),
     dict(no=12, mod=2, title='层级结构：WaveNet 与树形依赖', src='L6 · 0:56', mins=39, levels=[
         ('滑窗造数据集（上下文 8）', '上下文从 3 拉到 8，一个字符一个字符往后挪。', 'P5', 30, 47),
@@ -126,6 +145,9 @@ LESSONS = [
         ('BatchNorm1d：按 ndim 选归约轴', '二维批按第 0 维归一，三维批要按 (0,1) 一起归。', 'P5', 92, 111),
         ('FlattenConsecutive：合并相邻两位', '每合并一次，序列长度减半、特征宽度翻倍。', 'P5', 138, 152),
         ('分层模型装配', '同样的一层重复三次，序列 8→4→2→1，视野 2→4→8。', 'P5', 186, 203),
+        ('训练循环：工程版', 'model(Xb) 一行前向、loss.backward() 一行反向——类都封装好了。', 'P5', 205, 228),
+        ('split_loss：eval 模式评估', '先把所有层切到 eval，再算训练/验证两份损失。', 'P5', 240, 258),
+        ('采样：WaveNet 版', '滑动窗口喂 8 字符上下文，采到句号停。', 'P5', 261, 279),
     ]),
     dict(no=13, mod=2, title='Attention 为什么：从平均到加权', src='新编', mins=30, levels=[
         ('用掩码矩阵做加权平均', '下三角矩阵乘一遍，就等于「只对前面求平均」。', 'L7', 165, 178),
@@ -142,6 +164,8 @@ LESSONS = [
         ('MultiHead：拼接 + 投影', '拼完再走一次线性层，把多头的意见混成一路。', 'L7', 400, 404),
         ('FeedFoward：扩 4 倍再压回', '先升维再降维，中间夹一个 ReLU。', 'L7', 409, 420),
         ('Block：先通信再计算', '两条残差：注意力负责通信，前馈负责计算。', 'L7', 424, 441),
+        ('BigramLanguageModel：定义', '一张 embedding 表直出 logits——最朴素的神经语言模型。', 'L7', 96, 116),
+        ('BigramLM.generate', '每次只看最后一个位置的 logits，接一个、拼回去。', 'L7', 118, 138),
     ]),
     dict(no=15, mod=3, title='从零写 GPT：残差、缩放与训练', src='L7 后半', mins=45, levels=[
         ('超参数一览', '六十四维、四个头、四层——这些小模型一晚就能训完。', 'L7', 307, 318),
@@ -152,6 +176,9 @@ LESSONS = [
         ('forward：词向量 + 位置向量', '同一个字符在不同位置，要靠位置向量区分开。', 'L7', 450, 458),
         ('forward：收尾 + 交叉熵', '最后过一层 LayerNorm，再投到词表上。', 'L7', 459, 470),
         ('generate：逐字接龙', '每次只取最后一个位置的输出，接上去再算下一轮。', 'L7', 472, 490),
+        ('LayerNorm1d：自己写一个', 'GPT 不用 BN，换 LayerNorm：按行归一，跟 batch 无关。', 'L7', 264, 286),
+        ('参数统计与 AdamW', '模型搬上 GPU 数参数量，优化器就一行 AdamW。', 'L7', 488, 495),
+        ('训练循环与最终生成', '定期估损、前向反向更新，最后 generate 出 2000 字符。', 'L7', 496, 514),
     ]),
     dict(no=16, mod=3, title='分词器：BPE 到底在切什么', src='L8 · 2:13', mins=42, levels=[
         ('get_stats：数相邻对', '把整段文本看成整数序列，统计每对相邻整数出现了几次。', 'BS', 13, 22),
@@ -160,6 +187,50 @@ LESSONS = [
         ('train：存下 merges 与 vocab', 'merges 决定编码，vocab 只是给人看的。', 'BB', 43, 49),
         ('encode：一路合并到没有为止', '每步都挑 merge 序号最小的那一对，保证和训练一致。', 'BB', 57, 73),
         ('decode：把 id 拼回字节', '所有 token 都是字节片段，拼起来再按 UTF-8 解。', 'BB', 51, 55),
+        ('split pattern：正则先切块', 'GPT-4 分词先靠一条长正则按类别切小块，再逐块 BPE。', 'RE', 16, 34),
+        ('encode_ordinary：逐块编码', '每块转 utf-8 字节单独跑 BPE，最后拼回一条 id 流。', 'RE', 111, 122),
+        ('bpe：单 token 拆回 pair', '按 rank 从小到大合并，直到没有更小的 pair 可用。', 'G4', 11, 27),
+        ('recover_merges：还原官方合并表', 'tiktoken 只给最终词表，把每个 token 跑一遍小 BPE 找回拆法。', 'G4', 29, 46),
+    ]),
+    dict(no=17, mod=4, title='nanoGPT·模型：model.py', src='nanoGPT 官方仓库', mins=45, levels=[
+        ('LayerNorm：手写可选 bias 版', '原生 LayerNorm 关不掉 bias，nanoGPT 只好自己写一个。', 'NG_M', 18, 27),
+        ('注意力：c_attn 一次出 qkv', '一个 Linear 出 3×n_embd，比三个 Linear 少两趟 kernel。', 'NG_M', 31, 50),
+        ('注意力前向：分头 + flash 双路径', '有 flash 就走 fused kernel，没有就退回手动 mask。', 'NG_M', 52, 76),
+        ('MLP 与 Block：Pre-LN 残差', '先归一再 attn/mlp，残差主干保持干净，深网才训得动。', 'NG_M', 78, 106),
+        ('GPTConfig + 模型骨架', 'dataclass 装超参，ModuleDict 把 wte/wpe/h/ln_f 挂成模块树。', 'NG_M', 108, 133),
+        ('初始化：tying + 残差缩放', 'wte 与 lm_head 共享权重；c_proj 按 1/√(2n) 缩小稳住残差流。', 'NG_M', 135, 148),
+        ('GPT.forward', 'token + 位置两个 embedding 相加，过 n_layer 个 Block，ln_f 后进 lm_head。', 'NG_M', 170, 193),
+        ('from_pretrained：搬 HF 权重', '四档 GPT-2 规格写死，从 transformers 拉权重灌进自家模型。', 'NG_M', 207, 229),
+        ('generate：温度 + top-k', 'temperature 调随机性，top_k 只留头部候选，比裸采样稳。', 'NG_M', 306, 330),
+    ]),
+    dict(no=18, mod=4, title='nanoGPT·训练：train.py', src='nanoGPT 官方仓库', mins=45, levels=[
+        ('超参总表', '训练脚本本身就是配置：参数全裸写，再由 configurator 命令行覆盖。', 'NG_T', 35, 56),
+        ('get_batch：memmap 按需读', 'train.bin 是几十亿 token 的 uint16 文件，mmap 切片 + pin_memory 上卡。', 'NG_T', 116, 133),
+        ('模型初始化：scratch', '从零开训：vocab_size 取 meta 或默认 50304（50257 向上取到 64 倍数）。', 'NG_T', 148, 157),
+        ('模型初始化：resume / gpt2', '续训读 ckpt 强校验六个结构参数；或直接拉 GPT-2 权重热启动。', 'NG_T', 158, 181),
+        ('estimate_loss：eval 模式估损', 'no_grad 下对 train/val 各跑 eval_iters 次取均值，比单点稳。', 'NG_T', 214, 226),
+        ('get_lr：warmup + cosine', '前 warmup_iters 步线性升到峰值，之后余弦退到 min_lr。', 'NG_T', 227, 238),
+        ('主循环：估损 + 存 ckpt', '每 eval_interval 评一次；验证集更好就把 checkpoint 存进 out_dir。', 'NG_T', 262, 283),
+        ('梯度累积 + clip + step', 'micro_step 循环摊大 batch；DDP 只在最后一个 micro 步同步梯度。', 'NG_T', 287, 307),
+        ('计时、MFU 与退出', '每步记耗时和 MFU，iter 超 max_iters 退出。', 'NG_T', 308, 327),
+    ]),
+    dict(no=19, mod=4, title='nanoGPT·推理：sample.py', src='nanoGPT 官方仓库', mins=30, levels=[
+        ('推理配置', 'sample.py 同样是裸配置：temperature、top_k、num_samples 控制生成。', 'NG_S', 12, 22),
+        ('加载 checkpoint 建模型', '读 ckpt.pt，照存的 model_args 重建 GPT，state_dict 剥掉 _orig_mod 前缀。', 'NG_S', 35, 55),
+        ('encode/decode 两条路', '有 meta.pkl 用训练时的词表，没有就退回 tiktoken 的 gpt2 编码。', 'NG_S', 57, 72),
+        ('Prompt → 循环生成', 'start 编成 ids，no_grad 里连 generate num_samples 次。', 'NG_S', 74, 89),
+    ]),
+    dict(no=20, mod=4, title='复现 GPT-2：train_gpt2.py', src='L9 · build-nanogpt', mins=50, levels=[
+        ('注意力：qkv 一把梭 + flash', 'c_attn 一次切三份，直接调 fused scaled_dot_product_attention。', 'G2', 26, 40),
+        ('GPT.forward：直推版', 'token + 位置 embedding 相加过 Block，lm_head 出 logits。', 'G2', 110, 128),
+        ('from_pretrained：对齐 HF', '按命名规则把 HF 的 Conv1D 权重逐个转置搬进自家 Linear。', 'G2', 131, 152),
+        ('DataLoaderLite：分片读', 'FineWeb 切成几十个 shard，每个进程按 rank 错开起点。', 'G2', 215, 233),
+        ('next_batch：跨片续读', '一片读完自动切下一片，position 始终对齐 DDP 步长。', 'G2', 240, 252),
+        ('get_most_likely_row：HellaSwag', '四个结尾谁续上去 loss 最低，谁就是答案。', 'G2', 258, 275),
+        ('get_lr：warmup 后余弦', '线性升到 max_lr，再余弦退到 min_lr。', 'G2', 353, 363),
+        ('采样：top-k 50 接龙', '每 250 步采样一次：topk 取概率、multinomial 抽、gather 取回 id。', 'G2', 456, 479),
+        ('训练一步：累积 + clip + step', 'micro_step 分摊 loss、DDP 末步才同步、clip 完再按调度 lr 更新。', 'G2', 482, 506),
+        ('日志：tok/s 与落盘', '吞吐按 B×T×累积×world_size 算，顺手写进 log 文件。', 'G2', 508, 519),
     ]),
 ]
 
@@ -214,7 +285,7 @@ def main():
                 print(code)
 
     lens = [len(L['levels']) for L in LESSONS]
-    assert len(LESSONS) == 16 and sum(lens) == 91, (len(LESSONS), sum(lens))
+    assert len(LESSONS) == 20 and sum(lens) == 148, (len(LESSONS), sum(lens))
     if report:
         print('\n合计', len(out), '关 /', sum(lens), '（', lens, '）')
         return
@@ -223,7 +294,7 @@ def main():
                 'src': L['src'], 'mins': L['mins'], 'n': len(L['levels'])}
                for L in LESSONS]
     body = ('/* 自动生成，勿手改 —— 源: data/build_llm.py\n'
-            '   《从零手搓大模型》16 讲 / 91 关，代码切片取自 Zero2hero 官方源码 */\n'
+            '   《从零手搓大模型》20 讲 / 148 关，代码切片取自 Zero2hero 官方源码 */\n'
             'window.LLM_MODULES = ' + json.dumps(MODULES, ensure_ascii=False) + ';\n'
             'window.LLM_LESSONS = ' + json.dumps(lessons, ensure_ascii=False, indent=1) + ';\n'
             'window.LLM_SNIPPETS = ' + json.dumps(out, ensure_ascii=False, indent=1) + ';\n')

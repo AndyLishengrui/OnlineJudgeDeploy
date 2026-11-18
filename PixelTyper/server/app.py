@@ -154,19 +154,20 @@ def _xp_of(stars, chars):
     return round(chars * f)
 
 
-def _shape_board_rows(rows, is_admin):
+def _shape_board_rows(rows, show_real_name):
     """排行榜对外的统一口径。
 
     - `username`（学号）本来就公开，保留；
     - `name` 统一回落到 username，避免旧前端/外部调用误拿到真名；
-    - `real_name`（真名）**只给管理员**，匿名和普通学生一律为 None。
+    - `real_name`（真名）**只给已登录用户**（2026-11-04 起同学之间也互相可见），
+      匿名请求一律为 None。
     """
     out = []
     for r in rows:
         d = dict(r)
         real = d.get("name")
         d["name"] = d.get("username") or ""
-        d["real_name"] = real if is_admin else None
+        d["real_name"] = real if show_real_name else None
         out.append(d)
     return out
 
@@ -496,14 +497,14 @@ class Handler(BaseHTTPRequestHandler):
         board.sort(key=lambda x: (-x["stars"], -x["xp"], -x["avg_acc"]))
         me_rank = None
         user = current_user(self.headers)
-        is_admin = bool(user and user["admin"])
+        show_real_name = bool(user)          # 所有登录用户都能看到彼此真名
         if user:
             for i, r in enumerate(board):
                 if r["user_id"] == user["id"]:
                     me_rank = dict(r, rank=i + 1)
                     break
-        me = _shape_board_rows([me_rank], is_admin)[0] if me_rank else None
-        self._send(200, {"rows": _shape_board_rows(board[offset:offset + limit], is_admin),
+        me = _shape_board_rows([me_rank], show_real_name)[0] if me_rank else None
+        self._send(200, {"rows": _shape_board_rows(board[offset:offset + limit], show_real_name),
                          "me": me, "total": len(board), "offset": offset, "limit": limit})
 
     def _h_board_snippet(self, snippet_id, q):
@@ -526,7 +527,7 @@ class Handler(BaseHTTPRequestHandler):
                 (snippet_id, limit, offset)).fetchall()
         user = current_user(self.headers)
         self._send(200, {"rows": _shape_board_rows(
-            [dict(r) for r in rows], bool(user and user["admin"])),
+            [dict(r) for r in rows], bool(user)),
             "total": total, "offset": offset, "limit": limit})
 
     def _h_list_packs(self):

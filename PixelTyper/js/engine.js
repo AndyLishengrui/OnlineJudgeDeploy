@@ -21,12 +21,17 @@
     6: { wpm3: 32, acc3: 0.95, wpm2: 23, acc2: 0.87 },  // 面向对象（代码更长，门槛略降）
   };
 
+  // 中文字符（含中文注释、中文串、全角标点、破折号/省略号/中文引号）无法用键盘直接敲，
+  // 这类位置在打字时自动跳过：不计击键、不计准确率，也不要求输入。
+  const AUTO_RE = /[\u00B7\u2000-\u206F\u2E80-\u2FFF\u3000-\u303F\u3040-\u30FF\u3400-\u4DBF\u4E00-\u9FFF\uF900-\uFAFF\uFE30-\uFE4F\uFF00-\uFFEF]/;
+  const isAutoChar = ch => AUTO_RE.test(ch);
+
   class TypingSession {
     /**
      * @param {string} code 练习代码原文
      * @param {(ev:object)=>void} onEvent 回调：{type:'char'|'backspace'|'done'|'tick', ...}
      */
-    constructor(code, onEvent) {
+    constructor(code, onEvent, opts) {
       // 统一换行符，去掉行尾空白，收尾恰好一个换行都不要（最后一行后无换行）
       this.code = code.replace(/\r\n?/g, '\n').replace(/[ \t]+$/gm, '');
       this.chars = [...this.code];
@@ -44,7 +49,77 @@
       this.perKey = {};        // expectedChar -> {err, ok, totalMs}
       this.onEvent = onEvent || (() => {});
       this.done = false;
+      // 中文（注释/字符串/全角标点）自动跳过：auto[i] = true 表示这一位不需要敲
+      this.auto = this.chars.map(isAutoChar);
+      // 注释与文档字符串整段跳过（含 # 与三引号本身）：只练真正要写的代码
+      this.commentStyle = (opts && opts.commentStyle) || 'python';
+      this._scanComments();
+      this._skipAuto();
+      if (this.cursor >= this.chars.length) { this.done = true; this.finishedAt = Date.now(); }
     }
+
+    /** 注释 / 文档字符串整段标成 auto（含 # 与三引号），字符串里的 # 不算注释 */
+    _scanComments() {
+      const s = this.chars, n = s.length, auto = this.auto;
+      const py = this.commentStyle === 'python';
+      const cpp = this.commentStyle === 'cpp';
+      let i = 0;
+      while (i < n) {
+        const c = s[i];
+        if (py && c === '#') {
+          while (i < n && s[i] !== '\n') auto[i++] = true;
+          continue;
+        }
+        if (cpp && c === '/' && s[i + 1] === '/') {
+          while (i < n && s[i] !== '\n') auto[i++] = true;
+          continue;
+        }
+        if (cpp && c === '/' && s[i + 1] === '*') {
+          auto[i++] = true; auto[i++] = true;
+          while (i < n && !(s[i] === '*' && s[i + 1] === '/')) auto[i++] = true;
+          if (i < n) { auto[i++] = true; auto[i++] = true; }
+          continue;
+        }
+        // 三引号文档字符串（Python）
+        if (py && (c === '"' || c === "'") && s[i + 1] === c && s[i + 2] === c) {
+          const q = c;
+          let j = i + 3;
+          while (j < n && !(s[j] === q && s[j + 1] === q && s[j + 2] === q)) j++;
+          const end = Math.min(n, j + 3);
+          for (let k = i; k < end; k++) auto[k] = true;
+          i = end;
+          continue;
+        }
+        // 普通字符串：整段跳过（防止串内的 # 或 // 被当注释）
+        if (c === '"' || c === "'") {
+          let j = i + 1;
+          while (j < n && s[j] !== c && s[j] !== '\n') { if (s[j] === '\\') j++; j++; }
+          i = (j < n && s[j] === c) ? j + 1 : j;
+          continue;
+        }
+        i++;
+      }
+      // 整行都在注释/文档字符串里 → 行尾换行也不用敲
+      let lineStart = 0;
+      for (let k = 0; k <= n; k++) {
+        if (k === n || s[k] === '\n') {
+          let allAuto = true;
+          for (let m = lineStart; m < k; m++) { if (!auto[m]) { allAuto = false; break; } }
+          if (allAuto && k < n) auto[k] = true;
+          lineStart = k + 1;
+        }
+      }
+    }
+
+    /** 把光标推过连续的中文字符（不计数、不计击键） */
+    _skipAuto() {
+      while (this.cursor < this.chars.length && this.auto[this.cursor]) {
+        if (this.states[this.cursor] === null) this.states[this.cursor] = 'auto';
+        this.cursor++;
+      }
+    }
+
+    static isAutoChar(ch) { return isAutoChar(ch); }
 
     get expected() { return this.chars[this.cursor]; }
     get totalChars() { return this.chars.length; }
@@ -113,6 +188,7 @@
       }
       this.cursor++;
       this.onEvent({ type: 'char', ok, expected, got: c, newline: expected === '\n' });
+      this._skipAuto();
 
       if (this.cursor >= this.chars.length) {
         this.done = true;
@@ -141,6 +217,7 @@
         this.cursor++;
         n++;
         this.onEvent({ type: 'char', ok: true, expected: exp, got: exp, newline: false, tabbed: true });
+        this._skipAuto();
         if (this.cursor >= this.chars.length) {
           this.done = true;
           this.finishedAt = now;
@@ -155,6 +232,8 @@
     backspace(now) {
       if (this.done || this.cursor <= 0) return false;
       this.cursor--;
+      // 退格落点若是中文自动位，继续往前退到上一个真正敲过的字符
+      while (this.cursor > 0 && this.auto[this.cursor]) this.cursor--;
       this.states[this.cursor] = null;
       this.physical[this.cursor] = false;
       this.lastKeyAt = now;

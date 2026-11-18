@@ -1,0 +1,1125 @@
+{
+ "jiangyi": {
+  "sid": 9361217,
+  "title": "Python 专业课讲义",
+  "eps": [
+   {
+    "bvid": "BV1fGJd6gE2Y",
+    "title": "第1章 Python语言初识｜环境搭建与第一个程序 · Python 专业课讲义",
+    "dur": 752
+   },
+   {
+    "bvid": "BV1xAnn6WEqK",
+    "title": "第2章 变量和简单数据类型（1/6）｜变量与常量：名字、命名与赋值 · Python 专业课讲义",
+    "dur": 336
+   },
+   {
+    "bvid": "BV12Ann6WE7d",
+    "title": "第2章 变量和简单数据类型（2/6）｜字符串基础：引号、转义与常用操作 · Python 专业课讲义",
+    "dur": 320
+   },
+   {
+    "bvid": "BV14cnn6REyr",
+    "title": "第2章 变量和简单数据类型（3/6）｜字符串方法与格式化：切片、split、f-string · Python 专业课讲义",
+    "dur": 288
+   },
+   {
+    "bvid": "BV14cnn6REk5",
+    "title": "第2章 变量和简单数据类型（4/6）｜数字与运算：整数、浮点、精度与 math · Python 专业课讲义",
+    "dur": 301
+   },
+   {
+    "bvid": "BV14cnn6RE7Q",
+    "title": "第2章 变量和简单数据类型（5/6）｜输入与输出：print、input 与 f-string · Python 专业课讲义",
+    "dur": 248
+   },
+   {
+    "bvid": "BV1yKnn6HEEr",
+    "title": "第2章 变量和简单数据类型（6/6）｜综合与陷阱：错误、引用与实战（收官） · Python 专业课讲义",
+    "dur": 294
+   },
+   {
+    "bvid": "BV15xnn6BERj",
+    "title": "第3章 列表操作（1/6）｜创建、索引与添加 · Python 专业课讲义",
+    "dur": 461
+   },
+   {
+    "bvid": "BV1ahnn6NE91",
+    "title": "第3章 列表操作（2/6）｜删除与组织：del、pop、remove、排序 · Python 专业课讲义",
+    "dur": 387
+   },
+   {
+    "bvid": "BV1Vhnn6NEPL",
+    "title": "第3章 列表操作（3/6）｜遍历与截取：for、range 与切片 · Python 专业课讲义",
+    "dur": 357
+   },
+   {
+    "bvid": "BV1Vbnn6iEU8",
+    "title": "第3章 列表操作（4/6）｜元组：不可变的序列 · Python 专业课讲义",
+    "dur": 347
+   },
+   {
+    "bvid": "BV1Vbnn6iE23",
+    "title": "第3章 列表操作（5/6）｜进阶（上）：方法辨析、排序 key、推导式 · Python 专业课讲义",
+    "dur": 364
+   },
+   {
+    "bvid": "BV1N1nn6REE5",
+    "title": "第3章 列表操作（6/6）｜进阶（下）：拷贝、陷阱与综合 · Python 专业课讲义",
+    "dur": 340
+   },
+   {
+    "bvid": "BV1ULnJ6xETt",
+    "title": "第4章 流程控制语句（1/6）｜赋值、输入与输出 · Python 专业课讲义",
+    "dur": 443
+   },
+   {
+    "bvid": "BV1uLnJ64EH7",
+    "title": "第4章 流程控制语句（2/6）｜条件语句基础 · Python 专业课讲义",
+    "dur": 420
+   },
+   {
+    "bvid": "BV1canJ61E3c",
+    "title": "第4章 流程控制语句（3/6）｜条件进阶：真值、短路、三元、match · Python 专业课讲义",
+    "dur": 439
+   },
+   {
+    "bvid": "BV1canJ61EqM",
+    "title": "第4章 流程控制语句（4/6）｜for 循环与 range · Python 专业课讲义",
+    "dur": 381
+   },
+   {
+    "bvid": "BV1nanJ61EgB",
+    "title": "第4章 流程控制语句（5/6）｜while、break 与 continue · Python 专业课讲义",
+    "dur": 353
+   },
+   {
+    "bvid": "BV1whnJ6jEjC",
+    "title": "第4章 流程控制语句（6/6）｜循环进阶与综合 · Python 专业课讲义",
+    "dur": 470
+   },
+   {
+    "bvid": "BV1sZnL63ETK",
+    "title": "第5章 字典（1/3）｜键值对、创建与增删改查 · Python 专业课讲义",
+    "dur": 701
+   },
+   {
+    "bvid": "BV1xdnL6kELS",
+    "title": "第5章 字典（2/3）｜七大方法与嵌套 · Python 专业课讲义",
+    "dur": 694
+   },
+   {
+    "bvid": "BV1xdnL6kELr",
+    "title": "第5章 字典（3/3）｜推导式、实战与作业 · Python 专业课讲义",
+    "dur": 897
+   },
+   {
+    "bvid": "BV1v7nj6tE2c",
+    "title": "第6章 函数（1/3）｜定义、返回值与传参 · Python 专业课讲义",
+    "dur": 735
+   },
+   {
+    "bvid": "BV1L7nj6tEjF",
+    "title": "第6章 函数（2/3）｜作用域、传递列表与模块 · Python 专业课讲义",
+    "dur": 553
+   },
+   {
+    "bvid": "BV157nj6tEUG",
+    "title": "第6章 函数（3/3）｜lambda、实例与作业 · Python 专业课讲义",
+    "dur": 431
+   },
+   {
+    "bvid": "BV1kKnE6CECe",
+    "title": "第7章 类（1/4）｜类与对象：定义、self 与构造析构 · Python 专业课讲义",
+    "dur": 592
+   },
+   {
+    "bvid": "BV1CNnE65E3y",
+    "title": "第7章 类（2/4）｜类属性、三种方法与特殊方法 · Python 专业课讲义",
+    "dur": 523
+   },
+   {
+    "bvid": "BV1WNnE65Euw",
+    "title": "第7章 类（3/4）｜继承、MRO 与多态 · Python 专业课讲义",
+    "dur": 457
+   },
+   {
+    "bvid": "BV1CNnE65EV2",
+    "title": "第7章 类（4/4）｜作用域、迭代器与常见陷阱 · Python 专业课讲义",
+    "dur": 675
+   },
+   {
+    "bvid": "BV1J3nE6gEBY",
+    "title": "第8章 文件和异常（1/6）｜打开与读取：open、模式与编码 · Python 专业课讲义",
+    "dur": 674
+   },
+   {
+    "bvid": "BV17LnE6qE2c",
+    "title": "第8章 文件和异常（2/6）｜写入与 with：write、flush、列表推导 · Python 专业课讲义",
+    "dur": 519
+   },
+   {
+    "bvid": "BV1ZLnE6qERz",
+    "title": "第8章 文件和异常（3/6）｜路径与目录：os 模块、目录树与 os.walk · Python 专业课讲义",
+    "dur": 444
+   },
+   {
+    "bvid": "BV17LnE6qEQ3",
+    "title": "第8章 文件和异常（4/6）｜常见文件格式：pathlib、csv、json 与二进制 · Python 专业课讲义",
+    "dur": 533
+   },
+   {
+    "bvid": "BV1f5nE6MEZR",
+    "title": "第8章 文件和异常（5/6）｜异常基础：try / except / else / finally · Python 专业课讲义",
+    "dur": 528
+   },
+   {
+    "bvid": "BV1E5nE6MEkg",
+    "title": "第8章 文件和异常（6/6）｜raise、断言与日志 · Python 专业课讲义",
+    "dur": 587
+   },
+   {
+    "bvid": "BV1FpWR6JEBg",
+    "title": "第9章 网络爬虫（1/4）｜爬虫原理：URL、请求响应与 robots 协议 · Python 专业课讲义",
+    "dur": 403
+   },
+   {
+    "bvid": "BV1E4WR62EAz",
+    "title": "第9章 网络爬虫（2/4）｜requests：抓取网页与响应处理 · Python 专业课讲义",
+    "dur": 353
+   },
+   {
+    "bvid": "BV1ExWR67Esr",
+    "title": "第9章 网络爬虫（3/4）｜Beautiful Soup：解析 HTML 提取数据 · Python 专业课讲义",
+    "dur": 367
+   },
+   {
+    "bvid": "BV1ZxWR6jERz",
+    "title": "第9章 网络爬虫（4/4）｜正则表达式与进阶：cookies、登录与浏览器控制 · Python 专业课讲义",
+    "dur": 367
+   },
+   {
+    "bvid": "BV1gkWR6iERa",
+    "title": "第10章 Numpy数值计算（1/7）｜NumPy 概述：ndarray 与向量化 · Python 专业课讲义",
+    "dur": 356
+   },
+   {
+    "bvid": "BV1DrWR6KErg",
+    "title": "第10章 Numpy数值计算（2/7）｜数组创建：ndim、shape 与常用函数 · Python 专业课讲义",
+    "dur": 200
+   },
+   {
+    "bvid": "BV1grWR6TEtF",
+    "title": "第10章 Numpy数值计算（3/7）｜索引与切片：视图、布尔与花式索引 · Python 专业课讲义",
+    "dur": 199
+   },
+   {
+    "bvid": "BV1arWR6TEAm",
+    "title": "第10章 Numpy数值计算（4/7）｜变形与转置：reshape、transpose 与 flatten · Python 专业课讲义",
+    "dur": 167
+   },
+   {
+    "bvid": "BV1u1WR6eExM",
+    "title": "第10章 Numpy数值计算（5/7）｜数值运算与广播机制 · Python 专业课讲义",
+    "dur": 253
+   },
+   {
+    "bvid": "BV1UyWR6PEYh",
+    "title": "第10章 Numpy数值计算（6/7）｜自学篇：排序筛选、随机种子与数据读写 · Python 专业课讲义",
+    "dur": 201
+   },
+   {
+    "bvid": "BV1SyWR6PEj7",
+    "title": "第10章 Numpy数值计算（7/7）｜综合案例：成绩分析、数据清洗与数据集 · Python 专业课讲义",
+    "dur": 225
+   }
+  ]
+ },
+ "shiyan": {
+  "sid": 9321748,
+  "title": "程序设计实践之Python 语法课",
+  "eps": [
+   {
+    "bvid": "BV1Ewpm6oE91",
+    "title": "Python 环境搭建与顺序语句",
+    "dur": 752
+   },
+   {
+    "bvid": "BV1zwpm6dETP",
+    "title": "Python 判断语句",
+    "dur": 1041
+   },
+   {
+    "bvid": "BV1zwpm6dEL6",
+    "title": "Python 循环语句",
+    "dur": 906
+   },
+   {
+    "bvid": "BV1qTpm6pEMW",
+    "title": "Python 列表",
+    "dur": 1190
+   },
+   {
+    "bvid": "BV1oTpm6pEi6",
+    "title": "Python 字符串",
+    "dur": 1143
+   },
+   {
+    "bvid": "BV1qNpm69EXP",
+    "title": "Python 元组集合字典",
+    "dur": 805
+   },
+   {
+    "bvid": "BV1qNpm69Eqx",
+    "title": "Python 函数",
+    "dur": 859
+   },
+   {
+    "bvid": "BV1VHJy6vEo5",
+    "title": "【勇者斗恶龙题解】A+B｜XMUOJ 实验0 P01",
+    "dur": 291
+   },
+   {
+    "bvid": "BV189J16aETW",
+    "title": "【勇者斗恶龙题解】简单乘积｜XMUOJ 实验0 P02",
+    "dur": 314
+   },
+   {
+    "bvid": "BV134Jy6wErg",
+    "title": "【勇者斗恶龙题解】差｜XMUOJ 实验0 P03",
+    "dur": 301
+   },
+   {
+    "bvid": "BV134Jy6wEmE",
+    "title": "【勇者斗恶龙题解】圆的面积｜XMUOJ 实验0 P04",
+    "dur": 292
+   },
+   {
+    "bvid": "BV1GsJy6YEmG",
+    "title": "【勇者斗恶龙题解】球的体积｜XMUOJ 实验0 P05",
+    "dur": 296
+   },
+   {
+    "bvid": "BV189J16aEgn",
+    "title": "【勇者斗恶龙题解】燃料消耗｜XMUOJ 实验0 P06",
+    "dur": 280
+   },
+   {
+    "bvid": "BV1S9J16aEse",
+    "title": "【勇者斗恶龙题解】名字的三种形式｜XMUOJ 实验0 P07",
+    "dur": 324
+   },
+   {
+    "bvid": "BV1mZJ16fEMU",
+    "title": "【勇者斗恶龙题解】名单的首尾｜XMUOJ 实验0 P08",
+    "dur": 300
+   },
+   {
+    "bvid": "BV14ZJ16fECr",
+    "title": "【勇者斗恶龙题解】收集摩托车｜XMUOJ 实验0 P09",
+    "dur": 316
+   },
+   {
+    "bvid": "BV1toJ168EdM",
+    "title": "【勇者斗恶龙题解】列表大扫除｜XMUOJ 实验0 P10",
+    "dur": 342
+   },
+   {
+    "bvid": "BV1toJ168EEB",
+    "title": "【勇者斗恶龙题解】名言｜XMUOJ 实验0 P11",
+    "dur": 298
+   },
+   {
+    "bvid": "BV1toJ168E7N",
+    "title": "【勇者斗恶龙题解】去除空白｜XMUOJ 实验0 P12",
+    "dur": 287
+   },
+   {
+    "bvid": "BV16VJ26UETd",
+    "title": "【勇者斗恶龙题解】嘉宾名单｜XMUOJ 实验0 P13",
+    "dur": 316
+   },
+   {
+    "bvid": "BV16VJ26UEwV",
+    "title": "【勇者斗恶龙题解】放眼世界｜XMUOJ 实验0 P14",
+    "dur": 375
+   },
+   {
+    "bvid": "BV1LnJy6KE7p",
+    "title": "【勇者斗恶龙题解】嘉宾人数｜XMUOJ 实验0 P15",
+    "dur": 299
+   },
+   {
+    "bvid": "BV1FVJ26SECo",
+    "title": "【勇者斗恶龙题解】最小数和它的位置｜XMUOJ 实验0 P16",
+    "dur": 337
+   },
+   {
+    "bvid": "BV1BGJy6rEfr",
+    "title": "【勇者斗恶龙题解】平均数1｜XMUOJ 实验一 P01",
+    "dur": 305
+   },
+   {
+    "bvid": "BV1CAJy6mENb",
+    "title": "【勇者斗恶龙题解】工资｜XMUOJ 实验一 P02",
+    "dur": 309
+   },
+   {
+    "bvid": "BV1AAJy6UESp",
+    "title": "【勇者斗恶龙题解】油耗｜XMUOJ 实验一 P03",
+    "dur": 283
+   },
+   {
+    "bvid": "BV1WCJy6nEsL",
+    "title": "【勇者斗恶龙题解】两点间的距离｜XMUOJ 实验一 P04",
+    "dur": 297
+   },
+   {
+    "bvid": "BV1nMJy65EkH",
+    "title": "【勇者斗恶龙题解】钞票｜XMUOJ 实验一 P05",
+    "dur": 342
+   },
+   {
+    "bvid": "BV1WCJy6nESD",
+    "title": "【勇者斗恶龙题解】时间转换｜XMUOJ 实验一 P06",
+    "dur": 282
+   },
+   {
+    "bvid": "BV1nMJy65Ez5",
+    "title": "【勇者斗恶龙题解】天数转换｜XMUOJ 实验一 P07",
+    "dur": 302
+   },
+   {
+    "bvid": "BV1nMJy65EX7",
+    "title": "【勇者斗恶龙题解】简单计算｜XMUOJ 实验一 T01",
+    "dur": 309
+   },
+   {
+    "bvid": "BV1HKJy61Em2",
+    "title": "【勇者斗恶龙题解】面积｜XMUOJ 实验一 T02",
+    "dur": 328
+   },
+   {
+    "bvid": "BV1HKJy61EV3",
+    "title": "【勇者斗恶龙题解】平均数2｜XMUOJ 实验一 T03",
+    "dur": 298
+   },
+   {
+    "bvid": "BV1rKJy61Eix",
+    "title": "【勇者斗恶龙题解】工资和奖金｜XMUOJ 实验一 T04",
+    "dur": 334
+   },
+   {
+    "bvid": "BV19AJ16iEim",
+    "title": "【勇者斗恶龙题解】最大值｜XMUOJ 实验一 T05",
+    "dur": 275
+   },
+   {
+    "bvid": "BV1kDJ26WEph",
+    "title": "【勇者斗恶龙题解】距离｜XMUOJ 实验一 T06",
+    "dur": 304
+   },
+   {
+    "bvid": "BV1wDJ26WEHZ",
+    "title": "【勇者斗恶龙题解】钞票和硬币｜XMUOJ 实验一 T07",
+    "dur": 451
+   },
+   {
+    "bvid": "BV1LjJk6cEg7",
+    "title": "【勇者斗恶龙题解】倍数｜XMUOJ 实验二 P01",
+    "dur": 263
+   },
+   {
+    "bvid": "BV1vjJk6cEdW",
+    "title": "【勇者斗恶龙题解】零食｜XMUOJ 实验二 P02",
+    "dur": 247
+   },
+   {
+    "bvid": "BV1KYJk6JEZk",
+    "title": "【勇者斗恶龙题解】区间｜XMUOJ 实验二 P03",
+    "dur": 272
+   },
+   {
+    "bvid": "BV14YJk6JE7s",
+    "title": "【勇者斗恶龙题解】三角形｜XMUOJ 实验二 P04",
+    "dur": 261
+   },
+   {
+    "bvid": "BV1ThJk6DEky",
+    "title": "【勇者斗恶龙题解】游戏时间｜XMUOJ 实验二 P05",
+    "dur": 252
+   },
+   {
+    "bvid": "BV1exJ266EYt",
+    "title": "【勇者斗恶龙题解】加薪｜XMUOJ 实验二 P06",
+    "dur": 283
+   },
+   {
+    "bvid": "BV1LsJ263Eud",
+    "title": "【勇者斗恶龙题解】动物｜XMUOJ 实验二 P07",
+    "dur": 260
+   },
+   {
+    "bvid": "BV1NiJk67EWv",
+    "title": "【勇者斗恶龙题解】选择练习1｜XMUOJ 实验二 T01",
+    "dur": 262
+   },
+   {
+    "bvid": "BV1siJk67EoY",
+    "title": "【勇者斗恶龙题解】DDD｜XMUOJ 实验二 T02",
+    "dur": 254
+   },
+   {
+    "bvid": "BV1NiJk67ECJ",
+    "title": "【勇者斗恶龙题解】点的坐标｜XMUOJ 实验二 T03",
+    "dur": 273
+   },
+   {
+    "bvid": "BV1vsJ263EiG",
+    "title": "【勇者斗恶龙题解】三角形类型｜XMUOJ 实验二 T04",
+    "dur": 286
+   },
+   {
+    "bvid": "BV1xeJk6UEoL",
+    "title": "【勇者斗恶龙题解】游戏时间2｜XMUOJ 实验二 T05",
+    "dur": 264
+   },
+   {
+    "bvid": "BV1KeJk6UESP",
+    "title": "【勇者斗恶龙题解】税｜XMUOJ 实验二 T06",
+    "dur": 264
+   },
+   {
+    "bvid": "BV15sJ263EmJ",
+    "title": "【勇者斗恶龙题解】简单排序｜XMUOJ 实验二 T07",
+    "dur": 274
+   },
+   {
+    "bvid": "BV184Jk6WERr",
+    "title": "【勇者斗恶龙题解】一元二次方程公式｜XMUOJ 实验二 T08",
+    "dur": 276
+   },
+   {
+    "bvid": "BV1XbJ26BEvR",
+    "title": "【勇者斗恶龙题解】平均数3｜XMUOJ 实验二 T09",
+    "dur": 287
+   },
+   {
+    "bvid": "BV13hJ26TEdH",
+    "title": "【勇者斗恶龙题解】偶数｜XMUOJ 实验三 P01",
+    "dur": 231
+   },
+   {
+    "bvid": "BV1uvJ26eE8L",
+    "title": "【勇者斗恶龙题解】奇数｜XMUOJ 实验三 P02",
+    "dur": 223
+   },
+   {
+    "bvid": "BV18vJ26eEAu",
+    "title": "【勇者斗恶龙题解】正数｜XMUOJ 实验三 P03",
+    "dur": 236
+   },
+   {
+    "bvid": "BV1PsJ16pE4K",
+    "title": "【勇者斗恶龙题解】连续奇数的和1｜XMUOJ 实验三 P04",
+    "dur": 222
+   },
+   {
+    "bvid": "BV1uvJ26eEWN",
+    "title": "【勇者斗恶龙题解】最大数和它的位置｜XMUOJ 实验三 P05",
+    "dur": 256
+   },
+   {
+    "bvid": "BV1geJ26NEAo",
+    "title": "【勇者斗恶龙题解】递增序列｜XMUOJ 实验三 P06",
+    "dur": 251
+   },
+   {
+    "bvid": "BV1geJ26NEjC",
+    "title": "【勇者斗恶龙题解】连续整数相加｜XMUOJ 实验三 P07",
+    "dur": 251
+   },
+   {
+    "bvid": "BV1xcJ26oEWK",
+    "title": "【勇者斗恶龙题解】约数｜XMUOJ 实验三 P08",
+    "dur": 240
+   },
+   {
+    "bvid": "BV1xcJ26oE5N",
+    "title": "【勇者斗恶龙题解】PUM｜XMUOJ 实验三 P09",
+    "dur": 268
+   },
+   {
+    "bvid": "BV1xcJ26oEMK",
+    "title": "【勇者斗恶龙题解】余数｜XMUOJ 实验三 T01",
+    "dur": 229
+   },
+   {
+    "bvid": "BV14FJ26tEBR",
+    "title": "【勇者斗恶龙题解】六个奇数｜XMUOJ 实验三 T02",
+    "dur": 229
+   },
+   {
+    "bvid": "BV14FJ26tENi",
+    "title": "【勇者斗恶龙题解】乘法表｜XMUOJ 实验三 T03",
+    "dur": 263
+   },
+   {
+    "bvid": "BV14FJ26tEEH",
+    "title": "【勇者斗恶龙题解】实验｜XMUOJ 实验三 T04",
+    "dur": 264
+   },
+   {
+    "bvid": "BV1WPJ26REZ3",
+    "title": "【勇者斗恶龙题解】区间2｜XMUOJ 实验三 T05",
+    "dur": 260
+   },
+   {
+    "bvid": "BV1sPJ26dEim",
+    "title": "【勇者斗恶龙题解】连续奇数的和2｜XMUOJ 实验三 T06",
+    "dur": 260
+   },
+   {
+    "bvid": "BV12EJ16xEtc",
+    "title": "【勇者斗恶龙题解】简单斐波那契｜XMUOJ 实验三 T07",
+    "dur": 241
+   },
+   {
+    "bvid": "BV1sPJ26REua",
+    "title": "【勇者斗恶龙题解】数字序列和它的和｜XMUOJ 实验三 T08",
+    "dur": 256
+   },
+   {
+    "bvid": "BV1WPJ26RERF",
+    "title": "【勇者斗恶龙题解】完全数｜XMUOJ 实验三 T09",
+    "dur": 242
+   },
+   {
+    "bvid": "BV1NAJ264EYF",
+    "title": "【勇者斗恶龙题解】质数｜XMUOJ 实验三 T10",
+    "dur": 240
+   },
+   {
+    "bvid": "BV1xAJ26xEgf",
+    "title": "【勇者斗恶龙题解】菱形｜XMUOJ 实验三 T11",
+    "dur": 281
+   },
+   {
+    "bvid": "BV1n9J26HEsV",
+    "title": "【勇者斗恶龙题解】数组替换｜XMUOJ 实验四 P01",
+    "dur": 285
+   },
+   {
+    "bvid": "BV1cQJ26XEij",
+    "title": "【勇者斗恶龙题解】数组填充｜XMUOJ 实验四 P02",
+    "dur": 258
+   },
+   {
+    "bvid": "BV1cQJ26XEXh",
+    "title": "【勇者斗恶龙题解】数组选择｜XMUOJ 实验四 P03",
+    "dur": 250
+   },
+   {
+    "bvid": "BV1nQJ26XE92",
+    "title": "【勇者斗恶龙题解】数组中的行｜XMUOJ 实验四 P04",
+    "dur": 433
+   },
+   {
+    "bvid": "BV1NyJ26tE4c",
+    "title": "【勇者斗恶龙题解】数组的右上半部分｜XMUOJ 实验四 P05",
+    "dur": 429
+   },
+   {
+    "bvid": "BV1NyJ26tEgp",
+    "title": "【勇者斗恶龙题解】数组的左上半部分｜XMUOJ 实验四 P06",
+    "dur": 396
+   },
+   {
+    "bvid": "BV1NyJ26tEPe",
+    "title": "【勇者斗恶龙题解】数组的上方区域｜XMUOJ 实验四 P07",
+    "dur": 396
+   },
+   {
+    "bvid": "BV1NkJ26fEf6",
+    "title": "【勇者斗恶龙题解】数组的左方区域｜XMUOJ 实验四 P08",
+    "dur": 388
+   },
+   {
+    "bvid": "BV1NkJ26fECQ",
+    "title": "【勇者斗恶龙题解】平方矩阵 I｜XMUOJ 实验四 P09",
+    "dur": 257
+   },
+   {
+    "bvid": "BV1NkJ26fEUN",
+    "title": "【勇者斗恶龙题解】数组变换｜XMUOJ 实验四 T01",
+    "dur": 335
+   },
+   {
+    "bvid": "BV1WmJ26xEQ1",
+    "title": "【勇者斗恶龙题解】斐波那契数列｜XMUOJ 实验四 T02",
+    "dur": 253
+   },
+   {
+    "bvid": "BV1WmJ26xE4w",
+    "title": "【勇者斗恶龙题解】最小数和它的位置｜XMUOJ 实验四 T03",
+    "dur": 233
+   },
+   {
+    "bvid": "BV1AmJ26xEeH",
+    "title": "【勇者斗恶龙题解】数组中的列｜XMUOJ 实验四 T04",
+    "dur": 387
+   },
+   {
+    "bvid": "BV1s1J26oEgR",
+    "title": "【勇者斗恶龙题解】数组的右下半部分｜XMUOJ 实验四 T05",
+    "dur": 405
+   },
+   {
+    "bvid": "BV1y1J26oEkf",
+    "title": "【勇者斗恶龙题解】数组的左下半部分｜XMUOJ 实验四 T06",
+    "dur": 395
+   },
+   {
+    "bvid": "BV1dAJm65Ev1",
+    "title": "【勇者斗恶龙题解】数组的下方区域｜XMUOJ 实验四 T07",
+    "dur": 400
+   },
+   {
+    "bvid": "BV1dAJm65Eet",
+    "title": "【勇者斗恶龙题解】数组的右方区域｜XMUOJ 实验四 T08",
+    "dur": 393
+   },
+   {
+    "bvid": "BV1jAJm6LEni",
+    "title": "【勇者斗恶龙题解】平方矩阵 II｜XMUOJ 实验四 T09",
+    "dur": 275
+   },
+   {
+    "bvid": "BV1oAJm65EFP",
+    "title": "【勇者斗恶龙题解】平方矩阵 III｜XMUOJ 实验四 T10",
+    "dur": 281
+   },
+   {
+    "bvid": "BV1qcJm62Egk",
+    "title": "【勇者斗恶龙题解】蛇形矩阵｜XMUOJ 实验四 T11",
+    "dur": 260
+   },
+   {
+    "bvid": "BV1WKJ26WETb",
+    "title": "【勇者斗恶龙题解】字符串长度｜XMUOJ 实验五 P01",
+    "dur": 228
+   },
+   {
+    "bvid": "BV1dPJm6CEtV",
+    "title": "【勇者斗恶龙题解】字符串中的数字个数｜XMUOJ 实验五 P02",
+    "dur": 242
+   },
+   {
+    "bvid": "BV1dPJm6CExm",
+    "title": "【勇者斗恶龙题解】循环相克令｜XMUOJ 实验五 P03",
+    "dur": 262
+   },
+   {
+    "bvid": "BV1LPJm6yEE5",
+    "title": "【勇者斗恶龙题解】字符串加空格｜XMUOJ 实验五 P04",
+    "dur": 253
+   },
+   {
+    "bvid": "BV1foJ26EEyf",
+    "title": "【勇者斗恶龙题解】替换字符｜XMUOJ 实验五 P05",
+    "dur": 248
+   },
+   {
+    "bvid": "BV1JoJ26JEHE",
+    "title": "【勇者斗恶龙题解】字符串插入｜XMUOJ 实验五 P06",
+    "dur": 255
+   },
+   {
+    "bvid": "BV1PKJ26sEFq",
+    "title": "【勇者斗恶龙题解】只出现一次的字符｜XMUOJ 实验五 P07",
+    "dur": 250
+   },
+   {
+    "bvid": "BV1foJ26EECp",
+    "title": "【勇者斗恶龙题解】字符串匹配｜XMUOJ 实验五 T01",
+    "dur": 254
+   },
+   {
+    "bvid": "BV1FRJ26DEBQ",
+    "title": "【勇者斗恶龙题解】忽略大小写比较字符串大小｜XMUOJ 实验五 T02",
+    "dur": 239
+   },
+   {
+    "bvid": "BV1kRp26hEs9",
+    "title": "【勇者斗恶龙题解】去掉多余的空格｜XMUOJ 实验五 T03",
+    "dur": 241
+   },
+   {
+    "bvid": "BV1FRJ26DEHo",
+    "title": "【勇者斗恶龙题解】信息加密｜XMUOJ 实验五 T04",
+    "dur": 251
+   },
+   {
+    "bvid": "BV1JRJ26DEiH",
+    "title": "【勇者斗恶龙题解】输出字符串｜XMUOJ 实验五 T05",
+    "dur": 252
+   },
+   {
+    "bvid": "BV1qFJm67EDv",
+    "title": "【勇者斗恶龙题解】单词替换｜XMUOJ 实验五 T06",
+    "dur": 247
+   },
+   {
+    "bvid": "BV1oFJm6jEfX",
+    "title": "【勇者斗恶龙题解】字符串中最长的连续出现的字符｜XMUOJ 实验五 T07",
+    "dur": 251
+   },
+   {
+    "bvid": "BV1oFJm6jE9g",
+    "title": "【勇者斗恶龙题解】最长单词｜XMUOJ 实验五 T08",
+    "dur": 238
+   },
+   {
+    "bvid": "BV11Up26vEJY",
+    "title": "【勇者斗恶龙题解】倒排单词｜XMUOJ 实验五 T09",
+    "dur": 221
+   },
+   {
+    "bvid": "BV1ZZJ26mEfj",
+    "title": "【勇者斗恶龙题解】字符串移位包含问题｜XMUOJ 实验五 T10",
+    "dur": 230
+   },
+   {
+    "bvid": "BV1fZJ26mEEo",
+    "title": "【勇者斗恶龙题解】字符串乘方｜XMUOJ 实验五 T11",
+    "dur": 240
+   },
+   {
+    "bvid": "BV1fyJ66AEmY",
+    "title": "【勇者斗恶龙题解】字符串最大跨距｜XMUOJ 实验五 T12",
+    "dur": 240
+   },
+   {
+    "bvid": "BV1EZJ26UEcJ",
+    "title": "【勇者斗恶龙题解】最长公共字符串后缀｜XMUOJ 实验五 T13",
+    "dur": 247
+   },
+   {
+    "bvid": "BV1GtJ26uEoG",
+    "title": "【勇者斗恶龙题解】不同正整数的个数｜XMUOJ 实验六 P01",
+    "dur": 247
+   },
+   {
+    "bvid": "BV1HgJ26DEi5",
+    "title": "【勇者斗恶龙题解】模拟散列表｜XMUOJ 实验六 P02",
+    "dur": 234
+   },
+   {
+    "bvid": "BV1GtJ26uEfV",
+    "title": "【勇者斗恶龙题解】字符串赋值｜XMUOJ 实验六 P03",
+    "dur": 256
+   },
+   {
+    "bvid": "BV17JJ26yEFe",
+    "title": "【勇者斗恶龙题解】门禁系统｜XMUOJ 实验六 P04",
+    "dur": 229
+   },
+   {
+    "bvid": "BV1jJJ26yErt",
+    "title": "【勇者斗恶龙题解】数字排序｜XMUOJ 实验六 P05",
+    "dur": 242
+   },
+   {
+    "bvid": "BV1jJJ26yEhG",
+    "title": "【勇者斗恶龙题解】奇偶｜XMUOJ 实验六 T01",
+    "dur": 252
+   },
+   {
+    "bvid": "BV1ngJ26DEZz",
+    "title": "【勇者斗恶龙题解】字符串｜XMUOJ 实验六 T02",
+    "dur": 244
+   },
+   {
+    "bvid": "BV17EJ26LEn7",
+    "title": "【勇者斗恶龙题解】查找｜XMUOJ 实验六 T03",
+    "dur": 246
+   },
+   {
+    "bvid": "BV1rgJ26DE4T",
+    "title": "【勇者斗恶龙题解】出现次数最多的数｜XMUOJ 实验六 T04",
+    "dur": 239
+   },
+   {
+    "bvid": "BV17EJ26LEQt",
+    "title": "【勇者斗恶龙题解】子串计算｜XMUOJ 实验六 T05",
+    "dur": 263
+   },
+   {
+    "bvid": "BV1oXJk6vEac",
+    "title": "【勇者斗恶龙题解】n的阶乘｜XMUOJ 实验七 P01",
+    "dur": 232
+   },
+   {
+    "bvid": "BV1GnJk6tEBY",
+    "title": "【勇者斗恶龙题解】x和y的最大值｜XMUOJ 实验七 P02",
+    "dur": 223
+   },
+   {
+    "bvid": "BV1jHJ26VEsr",
+    "title": "【勇者斗恶龙题解】最大公约数｜XMUOJ 实验七 P03",
+    "dur": 240
+   },
+   {
+    "bvid": "BV1LHJ26VEmP",
+    "title": "【勇者斗恶龙题解】交换数值｜XMUOJ 实验七 P04",
+    "dur": 234
+   },
+   {
+    "bvid": "BV1LHJ26VEQG",
+    "title": "【勇者斗恶龙题解】打印数字｜XMUOJ 实验七 P05",
+    "dur": 239
+   },
+   {
+    "bvid": "BV1UBJ26aEco",
+    "title": "【勇者斗恶龙题解】打印矩阵｜XMUOJ 实验七 P06",
+    "dur": 258
+   },
+   {
+    "bvid": "BV1aWJk6xEHZ",
+    "title": "【勇者斗恶龙题解】递归求阶乘｜XMUOJ 实验七 P07",
+    "dur": 242
+   },
+   {
+    "bvid": "BV1bBJ26aEMQ",
+    "title": "【勇者斗恶龙题解】递归求斐波那契数列｜XMUOJ 实验七 P08",
+    "dur": 235
+   },
+   {
+    "bvid": "BV13HJk6oEo9",
+    "title": "【勇者斗恶龙题解】绝对值｜XMUOJ 实验七 T01",
+    "dur": 225
+   },
+   {
+    "bvid": "BV1tBJ26aEZe",
+    "title": "【勇者斗恶龙题解】两个数的和｜XMUOJ 实验七 T02",
+    "dur": 222
+   },
+   {
+    "bvid": "BV1aHJk6oERw",
+    "title": "【勇者斗恶龙题解】区间求和｜XMUOJ 实验七 T03",
+    "dur": 250
+   },
+   {
+    "bvid": "BV1j5Jk6aE3R",
+    "title": "【勇者斗恶龙题解】最小公倍数｜XMUOJ 实验七 T04",
+    "dur": 246
+   },
+   {
+    "bvid": "BV1bqJ26AEK6",
+    "title": "【勇者斗恶龙题解】复制数组｜XMUOJ 实验七 T05",
+    "dur": 268
+   },
+   {
+    "bvid": "BV1uqJ26AEVy",
+    "title": "【勇者斗恶龙题解】打印字符串｜XMUOJ 实验七 T06",
+    "dur": 233
+   },
+   {
+    "bvid": "BV1KrJ268EeB",
+    "title": "【勇者斗恶龙题解】数组翻转｜XMUOJ 实验七 T07",
+    "dur": 256
+   },
+   {
+    "bvid": "BV1KrJ268Eqq",
+    "title": "【勇者斗恶龙题解】数组去重｜XMUOJ 实验七 T08",
+    "dur": 254
+   },
+   {
+    "bvid": "BV14rJ268EJH",
+    "title": "【勇者斗恶龙题解】数组排序｜XMUOJ 实验七 T09",
+    "dur": 270
+   },
+   {
+    "bvid": "BV14rJ268EuK",
+    "title": "【勇者斗恶龙题解】跳台阶｜XMUOJ 实验七 T10",
+    "dur": 236
+   },
+   {
+    "bvid": "BV1m6J26cEEE",
+    "title": "【勇者斗恶龙题解】走方格｜XMUOJ 实验七 T11",
+    "dur": 238
+   },
+   {
+    "bvid": "BV1T6J26cEBH",
+    "title": "【勇者斗恶龙题解】排列｜XMUOJ 实验七 T12",
+    "dur": 272
+   }
+  ]
+ },
+ "qizhong": {
+  "sid": 9461078,
+  "title": "Python 期中串讲",
+  "eps": [
+   {
+    "bvid": "BV166xp6eEdH",
+    "title": "期中串讲①｜基本功、数位拆解与回文：把前九题一次吃透",
+    "dur": 928
+   },
+   {
+    "bvid": "BV1BCxp6aEqv",
+    "title": "期中串讲②｜求和·最值·标记：一个循环骨架，三种套路",
+    "dur": 757
+   },
+   {
+    "bvid": "BV1jMxp64Ecd",
+    "title": "期中串讲③｜素数·哥德巴赫·等差·完数：最后十一题的通用套路",
+    "dur": 822
+   }
+  ]
+ },
+ "tjjj": {
+  "sid": 9446962,
+  "title": "Python 题解精讲",
+  "eps": [
+   {
+    "bvid": "BV1x3xW6VE4X",
+    "title": "蛇形矩阵｜能走就走，走不通就右转 · XMUOJ 语法课习题 T11",
+    "dur": 499
+   },
+   {
+    "bvid": "BV1ezxU6cEJe",
+    "title": "函数串讲①｜八道例题，把 def、参数、return 一次讲透",
+    "dur": 454
+   },
+   {
+    "bvid": "BV1SKxU6XE4Z",
+    "title": "函数串讲②｜十二道习题：从一行函数，到回溯",
+    "dur": 492
+   },
+   {
+    "bvid": "BV1WxW76QES1",
+    "title": "星光共鸣｜忘掉前缀，只记两个数 · 蓝桥杯 Python B 组 G 题",
+    "dur": 542
+   },
+   {
+    "bvid": "BV1X8456AEG9",
+    "title": "平面选点｜只看叉积的奇偶 · 蓝桥杯 Python A 组 A 题",
+    "dur": 227
+   },
+   {
+    "bvid": "BV1LW456MEgU",
+    "title": "可选数｜K 拆成质因子幂 · 蓝桥杯 Python A 组 C 题",
+    "dur": 239
+   },
+   {
+    "bvid": "BV11C456WEyK",
+    "title": "购电优化｜每一度电该在哪买 · 蓝桥杯 Python A 组 F 题",
+    "dur": 245
+   },
+   {
+    "bvid": "BV1hY456cEBN",
+    "title": "魔法骰子｜期望 = 每层概率之和 · 蓝桥杯 Python A 组 H 题",
+    "dur": 228
+   },
+   {
+    "bvid": "BV1yA456DEfb",
+    "title": "干涉条纹｜画出来是一条梯形 · 蓝桥杯 Python B 组 B 题",
+    "dur": 263
+   },
+   {
+    "bvid": "BV1yN456JE55",
+    "title": "奇偶博弈｜只看有几个 1 · 蓝桥杯 Python B 组 E 题",
+    "dur": 223
+   },
+   {
+    "bvid": "BV12F456XELc",
+    "title": "蓝小圈｜并查集带权，整圈加记在根上 · 蓝桥杯 Python B 组 F 题",
+    "dur": 247
+   }
+  ]
+ },
+ "oop": {
+  "sid": 9600313,
+  "title": "Python面向对象编程实验",
+  "eps": [
+   {
+    "code": "exp11",
+    "bvid": "BV1Bisy6XEap",
+    "title": "【双勇者讲解】图书库存借还模拟｜XMUOJ 项目实验一 EXP1.1",
+    "dur": 442
+   },
+   {
+    "code": "exp12",
+    "bvid": "BV1qisy6XEUQ",
+    "title": "【双勇者讲解】读者借阅额度校验｜XMUOJ 项目实验一 EXP1.2",
+    "dur": 405
+   },
+   {
+    "code": "exp13",
+    "bvid": "BV1Bvsy6WE23",
+    "title": "【双勇者讲解】逾期天数与罚金｜XMUOJ 项目实验一 EXP1.3",
+    "dur": 377
+   },
+   {
+    "code": "exp21",
+    "bvid": "BV1fvsy6WEFn",
+    "title": "【双勇者讲解】国家数据校验｜XMUOJ 项目实验二 EXP2.1",
+    "dur": 367
+   },
+   {
+    "code": "exp22",
+    "bvid": "BV1Rcsy62Eou",
+    "title": "【双勇者讲解】两批数据合并去重｜XMUOJ 项目实验三 EXP2.2",
+    "dur": 331
+   },
+   {
+    "code": "exp23",
+    "bvid": "BV1GKsy65Ery",
+    "title": "【双勇者讲解】JSON 容错解析｜XMUOJ 项目实验二 EXP2.3",
+    "dur": 300
+   },
+   {
+    "code": "exp31",
+    "bvid": "BV1XKsy6VEWE",
+    "title": "【双勇者讲解】解析国家 HTML 片段｜XMUOJ 项目实验三 EXP3.1",
+    "dur": 349
+   },
+   {
+    "code": "exp32",
+    "bvid": "BV1XPsy6yE9L",
+    "title": "【双勇者讲解】数字清洗｜XMUOJ 项目实验三 EXP3.2",
+    "dur": 269
+   },
+   {
+    "code": "exp33",
+    "bvid": "BV1uasC6qEqT",
+    "title": "【双勇者讲解】提取页面链接｜XMUOJ 项目实验三 EXP3.3",
+    "dur": 262
+   },
+   {
+    "code": "exp41",
+    "bvid": "BV1uasC6qEMT",
+    "title": "【双勇者讲解】面积标注标签｜XMUOJ 项目实验四 EXP4.1",
+    "dur": 267
+   },
+   {
+    "code": "exp42",
+    "bvid": "BV1uhsC6MEkq",
+    "title": "【双勇者讲解】KNN 最近邻预测｜XMUOJ 项目实验四 EXP4.2",
+    "dur": 299
+   },
+   {
+    "code": "exp43",
+    "bvid": "BV1uhsC6MEDF",
+    "title": "【双勇者讲解】准确率与混淆矩阵｜XMUOJ 项目实验四 EXP4.3",
+    "dur": 283
+   },
+   {
+    "code": "exp44",
+    "bvid": "BV1TvsC6vEoN",
+    "title": "【双勇者讲解】min-max 归一化｜XMUOJ 项目实验四 EXP4.4",
+    "dur": 290
+   }
+  ]
+ }
+}

@@ -23,6 +23,19 @@
 > 同日 C++：五大关 tier4「函数圣殿」5 关全部改成独立函数（`find_max/my_strcat/add_eight/move_point`）；
 > C++ 语法题库实验七从 3 关扩到 **20 关**，与 Python P01-P08 / T01-T12 一一对应，全部用函数，
 > 生成/校验脚本 `data/build_cppbank_extra.py`（C++ 卡现为 **8 实验 / 42 关**）。
+>
+> 2026-11-10：新增《Python 公共课 PTA 题库》独立卡片（`data/ptabank.js`，源 = OJ
+> [Contest 483](https://xmuoj.com/contest/483)，现为 **9 周 / 82 题 / 164 关**（PTA1–PTA11，PTA5/PTA9 无题））。
+> 代码取自每题 hint 里「📖 参考题解」页的「参考代码」与「另一种写法」，同题两种写法各占一关。
+> 其中 14 题（28 份代码块）原题解含中文字符串，按老师口径**只在本卡英译**（原题解页不动）：
+> 覆盖表 `data/pta_en_overrides.json`，这些关卡的 hint 会注明「中文字符串已译成英文
+> （打字练习版，OJ 提交请用原题解）」。卡片位置：**大模型实战之后、语法题库实战之前**。
+> 生成脚本 `data/build_ptabank.py`（抓取缓存 `data/pta_pages.json`）；
+> 前端三张题库卡统一走 `BANKS`（`pta` tier -6 / `py` -4 / `cpp` -5）。
+>
+> 2026-11-18：新增《Python 面向对象编程实验》独立卡片（`data/oopbank.js`，4 实验 / 33 关，
+> tier -7）。每个实验的片段按顺序拼接 = 完整参考项目源文件（library.py / country_store.py /
+> scraper.py+merge.py / 四件套）；生成与复现脚本见仓库根目录 `oop_build_20261118/`。
 
 附加：特训营地（tier 0 符号/数字训练）、每日挑战、排行榜（复用 OJ 账号）、老师自定义关卡包（管理员在线编辑 JSON 发布）。
 
@@ -75,6 +88,10 @@ PixelTyper/
 │   └── sfx.js          # WebAudio 合成音效
 ├── data/
 │   ├── snippets.js     # 全部内置关卡：py-* / c-* / 特训 / ft-01..16（指法课）
+│   ├── ptabank.js      # 《Python 公共课 PTA 题库》：8 周 / 72 题 / 144 关
+│   ├── build_ptabank.py# 生成 ptabank.js（源：OJ Contest 483 的参考题解页）
+│   ├── pta_pages.json  # 72 道题参考题解页的抓取缓存（含代码块）
+│   ├── pta_en_overrides.json # 14 题 28 份含中文代码块的英译覆盖（原题解不动）
 │   └── flavor.js       # 文案：大关名/Boss 名/称号/成就
 ├── server/
 │   ├── app.py          # 后端全部代码（~450 行，stdlib http.server + sqlite3）
@@ -126,15 +143,17 @@ sudo docker cp <打包文件> oj-backend:/tmp/ && sudo docker exec oj-backend sh
 - 总榜：总星数 → 战功 XP（`XP_FACTOR=[0,0.6,1,1.6]`，不含 Boss 1.5x 和每日 2x 加成）→ 平均准确率
 - 单关榜：星数 → WPM → 准确率
 - 0 星（准确率 <80%）的成绩不上传、不计入任何统计
-- **真名只给管理员**（2026-10-26）：`users.name` 存 OJ 的 `real_name`（⚠️ 该字段在 `/api/profile` 的 `data` **顶层**，
-  不在 `data.user` 里——以前读错位置导致排行榜显示的全是学号）。排行榜接口对管理员额外下发 `real_name` 字段，
-  匿名/普通学生一律为 `null`，页面只显示学号；管理员多出「姓名」一列（总榜和单关榜都有）。
+- **真名对所有已登录用户可见**（2026-11-04 起，原 10-26 口径为仅管理员）：`users.name` 存 OJ 的 `real_name`
+  （⚠️ 该字段在 `/api/profile` 的 `data` **顶层**，不在 `data.user` 里——以前读错位置导致排行榜显示的全是学号）。
+  排行榜接口只对**带有效 OJ 会话**的请求下发 `real_name`，匿名请求一律为 `null`，页面只显示学号；
+  登录用户（学生/管理员）的总榜与单关榜都多出「姓名」一列，可互相看到真名。
 - 新用户首次访问/交卷时 `current_user()` 会自动把真名写进 `users.name`；老数据用一次性回填写入。
 
 ## 8. 前端关键机制（改代码前必读）
 
 - `app.js` 是 IIFE，内部函数不外露；`window.SNIPPETS`/`window.FLAVOR`/`window.Store`/`window.PTAPI` 是全局入口
 - 语言判定：`langOf(s)` 按 snippet id 前缀（`py-`/`c-`/其他）。Boss 击杀按语言记 `bossKills['py1'..'c5']`；**旧存档的数字键（`bossKills[1]`）对两种语言都算数，不要删这个兼容**
+- 题库卡统一走 `BANKS`：`pta`（tier -6，地图独立区）/ `py`（-4）/ `cpp`（-5）。`BANK_LIST` 只控制地图「语法题库实战」区的两张卡，`ALL_BANKS` 用于单关榜下拉与撤退/复盘回屏；**加新题库卡时两处都要看**。`ptabank.js` 的关卡 id 是 `pta-<周>-<题号>[b]`，深链接 `#ptab/<周>/<题号>[b]`
 - 打完停留复盘：`finishReview()` 显示 `#review-panel`（代码保留可见），Enter→结算 / R→重打 / Esc→返回；`gameCtx.settled` 保证 endLevel 幂等
 - 指法课：`lane="ft"` → renderCode 把换行转空格、code-panel 加 `.ft-mode`（大字自动折行）、Enter 键忽略
 - 字号可调：战场右上 A-/A+，`settings.fontCode`（默认 22）与 `settings.fontFt`（默认 30）分开持久化

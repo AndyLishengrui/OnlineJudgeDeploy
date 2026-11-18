@@ -191,6 +191,8 @@ body {
 @keyframes caret { 50% { background: var(--p-orange); } }
 .code-panel .ch.ws { opacity: .45; }
 .code-panel .ch.nl { color: #3d4270; }
+/* 中文注释/中文字符串：不需要敲，自动跳过（暗色 + 虚下划线） */
+.code-panel .ch.auto { color: #565b86; opacity: .62; border-bottom: 1px dashed #4a4f7a; }
 .code-panel .ch.line-start { }
 .code-panel .line-hl { }
 .code-panel .ch.hint-ws { color: #454b7d; }

@@ -1037,5 +1037,89 @@
     "dur": 247
    }
   ]
+ },
+ "oop": {
+  "sid": 9600313,
+  "title": "Python面向对象编程实验",
+  "eps": [
+   {
+    "code": "exp11",
+    "bvid": "BV1Bisy6XEap",
+    "title": "【双勇者讲解】图书库存借还模拟｜XMUOJ 项目实验一 EXP1.1",
+    "dur": 442
+   },
+   {
+    "code": "exp12",
+    "bvid": "BV1qisy6XEUQ",
+    "title": "【双勇者讲解】读者借阅额度校验｜XMUOJ 项目实验一 EXP1.2",
+    "dur": 405
+   },
+   {
+    "code": "exp13",
+    "bvid": "BV1Bvsy6WE23",
+    "title": "【双勇者讲解】逾期天数与罚金｜XMUOJ 项目实验一 EXP1.3",
+    "dur": 377
+   },
+   {
+    "code": "exp21",
+    "bvid": "BV1fvsy6WEFn",
+    "title": "【双勇者讲解】国家数据校验｜XMUOJ 项目实验二 EXP2.1",
+    "dur": 367
+   },
+   {
+    "code": "exp22",
+    "bvid": "BV1Rcsy62Eou",
+    "title": "【双勇者讲解】两批数据合并去重｜XMUOJ 项目实验三 EXP2.2",
+    "dur": 331
+   },
+   {
+    "code": "exp23",
+    "bvid": "BV1GKsy65Ery",
+    "title": "【双勇者讲解】JSON 容错解析｜XMUOJ 项目实验二 EXP2.3",
+    "dur": 300
+   },
+   {
+    "code": "exp31",
+    "bvid": "BV1XKsy6VEWE",
+    "title": "【双勇者讲解】解析国家 HTML 片段｜XMUOJ 项目实验三 EXP3.1",
+    "dur": 349
+   },
+   {
+    "code": "exp32",
+    "bvid": "BV1XPsy6yE9L",
+    "title": "【双勇者讲解】数字清洗｜XMUOJ 项目实验三 EXP3.2",
+    "dur": 269
+   },
+   {
+    "code": "exp33",
+    "bvid": "BV1uasC6qEqT",
+    "title": "【双勇者讲解】提取页面链接｜XMUOJ 项目实验三 EXP3.3",
+    "dur": 262
+   },
+   {
+    "code": "exp41",
+    "bvid": "BV1uasC6qEMT",
+    "title": "【双勇者讲解】面积标注标签｜XMUOJ 项目实验四 EXP4.1",
+    "dur": 267
+   },
+   {
+    "code": "exp42",
+    "bvid": "BV1uhsC6MEkq",
+    "title": "【双勇者讲解】KNN 最近邻预测｜XMUOJ 项目实验四 EXP4.2",
+    "dur": 299
+   },
+   {
+    "code": "exp43",
+    "bvid": "BV1uhsC6MEDF",
+    "title": "【双勇者讲解】准确率与混淆矩阵｜XMUOJ 项目实验四 EXP4.3",
+    "dur": 283
+   },
+   {
+    "code": "exp44",
+    "bvid": "BV1TvsC6vEoN",
+    "title": "【双勇者讲解】min-max 归一化｜XMUOJ 项目实验四 EXP4.4",
+    "dur": 290
+   }
+  ]
  }
 }

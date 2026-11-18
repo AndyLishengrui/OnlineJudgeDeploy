@@ -28,6 +28,7 @@
   let syncing = false;
 
   async function initOnline() {
+    const wasLoggedIn = oj.logged_in;
     const me = await window.PTAPI.me();
     oj.moved = !!(me && me.__moved);
     if (me && me.logged_in) {
@@ -35,6 +36,11 @@
       oj.user = me.user; oj.admin = !!me.admin;
     } else if (me) {
       oj.online = true; // 服务在线但未登录
+    }
+    // 刚从「未登录」变成「已登录」（例如去首页登录后切回来）：排行榜正开着就刷新，
+    // 让「姓名」列立刻出现
+    if (!wasLoggedIn && oj.logged_in && $('#screen-board').classList.contains('active')) {
+      renderBoard();
     }
     renderOjChip();
     refreshPacks();
@@ -99,7 +105,7 @@
       原样写进档案会变成「地图上看不到、修炼小屋却算进去」的幽灵星星。 */
   function isKnownId(id) {
     if (PK_ID_RE.test(id)) return true;
-    return [window.SNIPPETS, window.LLM_SNIPPETS, pyLanes(), cppLanes()]
+    return [window.SNIPPETS, window.LLM_SNIPPETS, pyLanes(), cppLanes(), ptabLanes(), oopLanes()]
       .some(list => (list || []).some(s => s.id === id));
   }
 
@@ -216,15 +222,33 @@
   }
   function cppOfLesson(no) { return cppLanes().filter(s => s.lesson === no); }
 
-  // 两张卡的数据形状完全一样，渲染只写一份。tier 用来占 curStageTier 的负哨兵。
+  // 《Python 公共课 PTA 题库》独立题库（data/ptabank.js，源：OJ Contest 483），同样不进 window.SNIPPETS。
+  // 代码取自每题「📖 参考题解」页的「参考代码」与「另一种写法」，同题两种写法各占一关。
+  // 《Python 面向对象编程实验》独立题库（data/oopbank.js，源：13_专业课实验/项目实验 的参考项目）。
+  // 每个课时 = 一个实验，课时内片段按顺序拼接就是完整源文件。
+  function oopLessons() { return window.OOP_LESSONS || []; }
+  function oopLanes() { return window.OOP_SNIPPETS || []; }
+  function oopOfLesson(no) { return oopLanes().filter(s => s.lesson === no); }
+
+  function ptabLessons() { return window.PTAB_LESSONS || []; }
+  function ptabLanes() { return window.PTAB_SNIPPETS || []; }
+  function ptabOfLesson(no) { return ptabLanes().filter(s => s.lesson === no); }
+
+  // 三张卡的数据形状完全一样，渲染只写一份。tier 用来占 curStageTier 的负哨兵。
   const BANKS = {
-    py: { label: 'Python 语法题库', icon: '🐍', cls: 'py', tag: 'PY', mods: 'PY_MODULES',
+    oop: { label: 'Python 面向对象编程实验', icon: '🧪', cls: 'py', tag: 'OOP', unitPre: '个', unit: '实验',
+           mods: 'OOP_MODULES', tier: -7, pre: 'oop', lessons: oopLessons, lanes: oopLanes, of: oopOfLesson },
+    pta: { label: 'Python公共课PTA题库', icon: '📘', cls: 'py', tag: 'PTA', unitPre: '', unit: '周', mods: 'PTAB_MODULES',
+           tier: -6, pre: 'pta', lessons: ptabLessons, lanes: ptabLanes, of: ptabOfLesson },
+    py: { label: 'Python 语法题库', icon: '🐍', cls: 'py', tag: 'PY', unitPre: '个', unit: '实验', mods: 'PY_MODULES',
           tier: -4, pre: 'pyq', lessons: pyLessons, lanes: pyLanes, of: pyOfLesson },
-    cpp: { label: 'C++ 语法题库', icon: '⚙', cls: 'c', tag: 'C++', mods: 'CPPQ_MODULES',
+    cpp: { label: 'C++ 语法题库', icon: '⚙', cls: 'c', tag: 'C++', unitPre: '个', unit: '实验', mods: 'CPPQ_MODULES',
            tier: -5, pre: 'cppq', lessons: cppLessons, lanes: cppLanes, of: cppOfLesson },
   };
+  // BANK_LIST = 地图「语法题库实战」区的两张卡；ALL_BANKS = 再加上独立的 PTA 卡（单关榜/撤退回屏也要认）
   const BANK_LIST = ['py', 'cpp'];
-  function bankAtTier(t) { return BANK_LIST.find(k => BANKS[k].tier === t) || null; }
+  const ALL_BANKS = ['pta', 'oop'].concat(BANK_LIST);
+  function bankAtTier(t) { return ALL_BANKS.find(k => BANKS[k].tier === t) || null; }
 
   // Boss 击杀记录按语言分开（py1..c5）；旧版数字键兼容两种语言。
   // 第三路是推导：Boss 就是该 tier 该 lang 代码最长的那关，有星即等于打过了。
@@ -355,9 +379,8 @@
     };
     wrap.appendChild(llmNode);
 
-    // 语法题库 —— 一门语言一张整幅宽卡，实验目录就长在卡里
-    sec('📚 语法题库实战');
-    BANK_LIST.forEach(key => {
+    // 题库卡片的公共渲染：分类目录长在卡里，点某个实验/周次就滚到那一节
+    const addBankCard = key => {
       const B = BANKS[key];
       const lanes = B.lanes();
       if (!lanes.length) return;             // 数据文件没加载就别出空卡
@@ -373,19 +396,35 @@
         <canvas class="pixel-canvas" width="16" height="16"></canvas>
         <div>
           <div class="node-name">${B.icon} ${esc(B.label)}</div>
-          <div class="node-sub">${lessons.length} 个实验 · ${problems} 题 · ${lanes.length} 关${alts ? ` · 含 ${alts} 关同题多解法` : ''} · 代码取自每题参考题解</div>
+          <div class="node-sub">${lessons.length} ${B.unitPre}${B.unit} · ${problems} ${key === 'oop' ? '个源文件' : '题'} · ${lanes.length} 关${alts ? ` · 含 ${alts} 关同题多解法` : ''} · ${key === 'oop' ? '按顺序拼接即完整工程' : '代码取自每题参考题解'}</div>
           <div class="node-stars" title="已完成 ${done}/${lanes.length} 关；星星 ${stars}/${lanes.length * 3}">${done}/${lanes.length} 关 · ★ ${stars}/${lanes.length * 3}</div>
         </div>
       </div>
       <div class="llm-mods">${bankModColumns(key)}</div>`;
-      PixelArt.draw(node.querySelector('canvas'), key === 'py' ? 'hero' : 'vera');
+      PixelArt.draw(node.querySelector('canvas'), key === 'c' ? 'vera' : 'hero');
       node.onclick = e => {
         const les = e.target.closest('.llm-les');
         SFX.click();
         renderBank(key, les ? +les.dataset.no : 0);
       };
       wrap.appendChild(node);
-    });
+    };
+
+    // 公共课 PTA 题库 —— 独立卡片，位置在「大模型实战」之后、「语法题库实战」之前
+    if (ptabLanes().length) {
+      sec('📘 公共课 PTA 题库');
+      addBankCard('pta');
+    }
+
+    // 语法题库 —— 一门语言一张整幅宽卡，实验目录就长在卡里
+    sec('📚 语法题库实战');
+    BANK_LIST.forEach(addBankCard);
+
+    // Python 面向对象编程实验 —— 专业课的项目实验，排在语法题库之后
+    if (oopLanes().length) {
+      sec('🧪 Python 面向对象编程实验');
+      addBankCard('oop');
+    }
 
     // 模块三/四：Python / C++ 语言关卡（分开闯关，各自解锁）
     [['py', '🐍 Python 语言关卡'], ['c', '⚙ C++ 语言关卡']].forEach(([lang, title]) => {
@@ -622,7 +661,7 @@
   // ─────────── 语法题库（一门语言一张卡） ───────────
   // 一屏列出这张卡的全部关卡，按实验分节；从地图点某个实验进来就滚到那一节。
   // 同题若有第二种同语言解法，会连着排两关（解法一 / 解法二），各记各的星。
-  const curBankNo = { py: 0, cpp: 0 };
+  const curBankNo = { pta: 0, py: 0, cpp: 0, oop: 0 };
   function renderBank(key, no) {
     const B = BANKS[key];
     curStageTier = B.tier; // 撤退/复盘据此回到这一屏
@@ -633,9 +672,13 @@
     $('#stage-title').textContent = `◆ ${B.icon} ${B.label}`;
     const lessons = B.lessons();
     const nProb = lessons.reduce((n, l) => n + l.p, 0);
-    $('#stage-desc').textContent = key === 'py'
-      ? `${lessons.length} 个实验 · ${nProb} 题，代码取自每题的 Python 参考题解：从新手村的 A+B 一路打到函数与字典。按实验分节，过一关就能接着打下一关。`
-      : `共 ${lessons.length} 个实验 · ${nProb} 题：收题库里有 C++ 参考题解的题，缺实验的代表性关卡已手工补写。按实验分节，过一关就能接着打下一关。`;
+    const descs = {
+      py: `${lessons.length} 个实验 · ${nProb} 题，代码取自每题的 Python 参考题解：从新手村的 A+B 一路打到函数与字典。按实验分节，过一关就能接着打下一关。`,
+      cpp: `共 ${lessons.length} 个实验 · ${nProb} 题：收题库里有 C++ 参考题解的题，缺实验的代表性关卡已手工补写。按实验分节，过一关就能接着打下一关。`,
+      oop: `${lessons.length} 个实验 · ${nProb} 个源文件，代码取自实验参考项目：同一实验内按顺序拼接就是完整工程（类 → 文件 → 爬虫 → Numpy）。`,
+      pta: `${lessons.length} 周 · ${nProb} 题，代码取自每题「📖 参考题解」的「参考代码」与「另一种写法」，同题两种写法各占一关。按周分节，过一关就能接着打下一关。`,
+    };
+    $('#stage-desc').textContent = descs[key] || '';
     const grid = $('#level-grid');
     grid.innerHTML = '';
     lessons.forEach(l => {
@@ -668,12 +711,12 @@
       if (el) el.scrollIntoView({ block: 'start' });
     });
   }
-  // ─────────── 深链接：#llm/<讲>[/<第几关>] · #pyq|cppq/<实验>[/<第几题>[b]] ───────────
+  // ─────────── 深链接：#llm/<讲>[/<第几关>] · #pyq|cppq|oop|ptab/<实验>[/<第几题>[b]] ───────────
   // 供导读页的「跟打」卡片直接跳进来，例如 #llm/6/2 = 讲6 第2关
   function applyHash() {
-    const p = /^#(pyq|cppq)(?:\/([0-7]))?(?:\/(\d{1,2})([a-d]?))?$/.exec(location.hash || '');
+    const p = /^#(pyq|cppq|ptab|oop)(?:\/(\d{1,2}))?(?:\/(\d{1,2})([a-d]?))?$/.exec(location.hash || '');
     if (p) {
-      const key = p[1] === 'pyq' ? 'py' : 'cpp';
+      const key = p[1] === 'pyq' ? 'py' : p[1] === 'cppq' ? 'cpp' : p[1] === 'oop' ? 'oop' : 'pta';
       const B = BANKS[key];
       const no = p[2] ? +p[2] : 0;
       const k = p[3] ? +p[3] : 0;
@@ -733,6 +776,7 @@
       else if (ch === ' ') { sp.textContent = '·'; sp.classList.add('ws'); }
       else if (ch === '\t') { sp.textContent = '→   '; sp.classList.add('ws'); }
       else sp.textContent = ch;
+      if (window.TypingSession && window.TypingSession.isAutoChar(ch)) sp.classList.add('auto');
       panel.appendChild(sp);
       charSpans.push(sp);
     }
@@ -847,7 +891,12 @@
     $('#progress-fill').style.width = '0%';
     mascotSay('idle', opts.boss ? pick(MASCOT_LINES.boss) : pick(MASCOT_LINES.start));
 
-    session = new TypingSession(snippet.code, onSessionEvent);
+    // 注释与文档字符串整段不要求敲（Python 用 #/三引号，C++ 用 // 与 /* */）
+    const commentStyle = /^cppq-/.test(snippet.id || '') ? 'cpp' : 'python';
+    session = new TypingSession(snippet.code, onSessionEvent, { commentStyle });
+    // 注释 / 文档字符串 / 中文字符都标成 auto（暗色虚下划线），学生一眼看出不用敲
+    session.auto.forEach((a, i) => { if (a && charSpans[i]) charSpans[i].classList.add('auto'); });
+    setCursor(0, session.cursor);   // 开头若是注释或文档字符串，光标直接跳到第一个要敲的字符
     show('screen-game');
     $('#code-panel').focus();
 
@@ -1156,10 +1205,11 @@
   let boardRows = [];          // 已渲染的行：用于分页 offset 和名次连续
   let boardTotal = 0;          // 后端返回的完整榜单人数
   let boardSeq = 0;            // 切榜/切关时作废旧请求
+  let boardShowReal = false;   // 是否显示「姓名」列：所有已登录用户可见
 
   function boardHeadHtml() {
-    // 管理员多一列真名（real_name 只有管理员请求时后端才下发）
-    const real = oj.admin ? '<th>姓名</th>' : '';
+    // 已登录用户多一列真名（real_name 只对登录请求下发，匿名一律 null）
+    const real = boardShowReal ? '<th>姓名</th>' : '';
     if (boardMode === 'overall') {
       return `<tr><th>#</th><th>勇者</th>${real}<th>总星数</th><th>战功XP</th><th>通关数</th><th>平均准确率</th></tr>`;
     }
@@ -1167,7 +1217,7 @@
   }
 
   function boardRowHtml(r, rank) {
-    const real = oj.admin ? `<td class="b-realname">${esc(r.real_name || '—')}</td>` : '';
+    const real = boardShowReal ? `<td class="b-realname">${esc(r.real_name || '—')}</td>` : '';
     if (boardMode === 'overall') {
       return `
           <tr${oj.user && r.user_id === oj.user.id ? ' class="me"' : ''}>
@@ -1220,6 +1270,8 @@
     if (reset) {
       boardRows = [];
       boardTotal = typeof res.total === 'number' ? res.total : rows.length;
+      // 登录用户都能看到彼此真名；若 /me 尚未返回（竞态），用后端是否下发真名兜底
+      boardShowReal = oj.logged_in || rows.some(r => r.real_name != null);
       table.innerHTML = `<tbody>${boardHeadHtml()}</tbody>`;
       meLine.textContent = '';
     }
@@ -1275,7 +1327,7 @@
         llmOfLesson(l.no).map(s => `<option value="${esc(s.id)}">${esc(s.title)}</option>`).join('') +
         '</optgroup>');
     });
-    BANK_LIST.forEach(key => {
+    ALL_BANKS.forEach(key => {
       const B = BANKS[key];
       B.lessons().forEach(l => {
         // 同题多解法时几关同名，选项里标一下解法，否则下拉里分不出

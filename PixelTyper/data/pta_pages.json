@@ -1,0 +1,1154 @@
+[
+ {
+  "_id": "PTA1.1",
+  "title": "求2数的积",
+  "url": "https://xmuoj.com/tc/s/f4d344371f5fda0193b3",
+  "crumb": "《公共课 PTA 题库》参考题解 · 第一周 Python 基础语法与简单程序练习",
+  "secs": [
+   "原题",
+   "归纳",
+   "参考代码（Python3 · 带注释）",
+   "另一种写法"
+  ],
+  "codes": [
+   "a = int(input())\nb = int(input())\nprint(a * b)",
+   "# 第二实现：整份 stdin 读入 + functools.reduce 连乘，\n# 而不是 input() 逐行读、用 * 运算符\nimport sys\nfrom functools import reduce\nfrom operator import mul\n\nnums = [int(t) for t in sys.stdin.read().split()]\nprint(reduce(mul, nums))"
+  ]
+ },
+ {
+  "_id": "PTA1.2",
+  "title": "计算三角形面积",
+  "url": "https://xmuoj.com/tc/s/74c5f8ae31762a59b957",
+  "crumb": "《公共课 PTA 题库》参考题解 · 第一周 Python 基础语法与简单程序练习",
+  "secs": [
+   "原题",
+   "归纳",
+   "参考代码（Python3 · 带注释）",
+   "另一种写法"
+  ],
+  "codes": [
+   "import math\na = int(input())\nb = int(input())\nc = int(input())\np = (a + b + c) / 2.0          # 半周长\ns = math.sqrt(p * (p - a) * (p - b) * (p - c))   # 海伦公式\nprint(s)",
+   "# 第二实现：整份读入 + sum() 求周长 + reduce 连乘四个因子，\n# 而不是 input() 逐行读、手写 a+b+c 与四因子相乘表达式\nimport math\nimport sys\nfrom functools import reduce\nfrom operator import mul\n\na, b, c = (int(t) for t in sys.stdin.read().split())\np = sum([a, b, c]) / 2.0                    # 半周长\ns = math.sqrt(reduce(mul, [p, p - a, p - b, p - c]))\nprint(s)"
+  ]
+ },
+ {
+  "_id": "PTA1.3",
+  "title": "输出姓名",
+  "url": "https://xmuoj.com/tc/s/1685c0a9a385a689d8fb",
+  "crumb": "《公共课 PTA 题库》参考题解 · 第一周 Python 基础语法与简单程序练习",
+  "secs": [
+   "原题",
+   "归纳",
+   "参考代码（Python3 · 带注释）",
+   "另一种写法"
+  ],
+  "codes": [
+   "s1 = input()\ns2 = input()\nprint(s1 + \" \" + s2)\n# 更简洁的等价写法：print(s1, s2) —— print 多个参数默认以空格分隔",
+   "# 第二实现：把加空格的事交给 print 的多参数默认分隔符，\n# 而不是手工用 + 拼一个空格进去\nfirst_name = input()\nfamily_name = input()\nprint(first_name, family_name)"
+  ]
+ },
+ {
+  "_id": "PTA1.4",
+  "title": "输出英文时间",
+  "url": "https://xmuoj.com/tc/s/c576d6b101a61e59345a",
+  "crumb": "《公共课 PTA 题库》参考题解 · 第一周 Python 基础语法与简单程序练习",
+  "secs": [
+   "原题",
+   "归纳",
+   "参考代码（Python3 · 带注释）",
+   "另一种写法"
+  ],
+  "codes": [
+   "month = input()\nprint(month + \". 1st\")",
+   "# 第二实现：用 print 的 sep 参数拼出 \". 1st\"，\n# 而不是手工用 + 做字符串拼接\nmonth = input()\nprint(month, \"1st\", sep=\". \")"
+  ]
+ },
+ {
+  "_id": "PTA1.5",
+  "title": "身份证号码是否18位",
+  "url": "https://xmuoj.com/tc/s/4afcaec1bd4561610317",
+  "crumb": "《公共课 PTA 题库》参考题解 · 第一周 Python 基础语法与简单程序练习",
+  "secs": [
+   "原题",
+   "归纳",
+   "参考代码（Python3 · 带注释）",
+   "另一种写法"
+  ],
+  "codes": [
+   "id_card = input()\nprint(len(id_card) == 18)",
+   "# 第二实现：用 for 循环手数位数，再交给条件表达式输出文本，\n# 而不是内置的 len() + 直接打印布尔值\ncard = input()\ncount = 0\nfor _ in card:\n    count += 1\nprint(\"True\" if count == 18 else \"False\")"
+  ]
+ },
+ {
+  "_id": "PTA1.6",
+  "title": "求个位、十位、百位、千位和万位数",
+  "url": "https://xmuoj.com/tc/s/b46eef29f454643bbce3",
+  "crumb": "《公共课 PTA 题库》参考题解 · 第一周 Python 基础语法与简单程序练习",
+  "secs": [
+   "原题",
+   "归纳",
+   "参考代码（Python3 · 带注释）",
+   "另一种写法"
+  ],
+  "codes": [
+   "n = int(input())\n\nwan  = n // 10000          # 万位\nqian = n // 1000 % 10      # 千位\nbai  = n // 100 % 10       # 百位\nshi  = n // 10 % 10        # 十位\nge   = n % 10              # 个位\n\nprint(wan, qian, bai, shi, ge)",
+   "# 第二实现：循环「取余得最低位、整除降一位」连续剥 5 次，再倒序输出，\n# 而不是给每一位单独写 n // 10**k % 10\nn = int(input())\ndigits = []\nfor _ in range(5):\n    digits.append(n % 10)\n    n //= 10\nprint(*reversed(digits))"
+  ]
+ },
+ {
+  "_id": "PTA1.7",
+  "title": "求2个数的较大者及其平方根",
+  "url": "https://xmuoj.com/tc/s/0a6ec390a53872cd8a4a",
+  "crumb": "《公共课 PTA 题库》参考题解 · 第一周 Python 基础语法与简单程序练习",
+  "secs": [
+   "原题",
+   "归纳",
+   "参考代码（Python3 · 带注释）",
+   "另一种写法"
+  ],
+  "codes": [
+   "import math\na = int(input())\nb = int(input())\nbigger = (a + b + abs(a - b)) // 2   # 公式求较大者，整除保持整数\nprint(bigger)\nprint(bigger ** 0.5)                 # 平方根：也可写 math.sqrt(bigger)",
+   "# 第二实现：用比较表达式（题面禁用的写法，仅用于对拍）直接取较大者，\n# 而不是用 (a + b + |a - b|) // 2 这个无分支公式；\n# 平方根也换成标准库 math.sqrt，而不是 ** 0.5\nimport math\nimport sys\n\na, b = (int(t) for t in sys.stdin.read().split())\nbigger = a if a >= b else b\nprint(bigger)\nprint(math.sqrt(bigger))"
+  ]
+ },
+ {
+  "_id": "PTA1.8",
+  "title": "四则运算（+ - * / // %）使用eval",
+  "url": "https://xmuoj.com/tc/s/517056b81f04280ca9ef",
+  "crumb": "《公共课 PTA 题库》参考题解 · 第一周 Python 基础语法与简单程序练习",
+  "secs": [
+   "原题",
+   "归纳",
+   "参考代码（Python3 · 带注释）",
+   "另一种写法"
+  ],
+  "codes": [
+   "expr = input()\nprint(eval(expr))",
+   "# 第二实现：把表达式 split 拆开，再按运算符逐个分派，\n# 完全不用 eval\nleft, op, right = input().split()\na, b = int(left), int(right)\nif op == \"+\":\n    result = a + b\nelif op == \"-\":\n    result = a - b\nelif op == \"*\":\n    result = a * b\nelif op == \"/\":\n    result = a / b\nelif op == \"//\":\n    result = a // b\nelse:                       # 只剩 %\n    result = a % b\nprint(result)"
+  ]
+ },
+ {
+  "_id": "PTA2.1",
+  "title": "求 b²-4ac 的值",
+  "url": "https://xmuoj.com/tc/s/521e1c41d850b1b748e7",
+  "crumb": "《公共课 PTA 题库》参考题解 · 第二周 顺序结构编程",
+  "secs": [
+   "原题",
+   "归纳",
+   "参考代码（Python3 · 带注释）",
+   "另一种写法"
+  ],
+  "codes": [
+   "a, b, c = map(int, input().split())\nprint(b * b - 4 * a * c)",
+   "# 第二实现：用列表解析一次读完所有 token，幂运算改用 pow()\nimport sys\n\na, b, c = [int(x) for x in sys.stdin.read().split()]\nprint(pow(b, 2) - 4 * a * c)"
+  ]
+ },
+ {
+  "_id": "PTA2.2",
+  "title": "输出出生日期",
+  "url": "https://xmuoj.com/tc/s/9b9e9cf1b306162b09e9",
+  "crumb": "《公共课 PTA 题库》参考题解 · 第二周 顺序结构编程",
+  "secs": [
+   "原题",
+   "归纳",
+   "参考代码（Python3 · 带注释）",
+   "另一种写法"
+  ],
+  "codes": [
+   "year, month, day = input().split(\",\")\nprint(f\"出生日期是{year}年{month}月{day}日\")",
+   "# 第二实现：用 str.format() 拼串，而不是 f-string\ny, m, d = input().split(\",\")\nprint(\"出生日期是{}年{}月{}日\".format(y, m, d))"
+  ]
+ },
+ {
+  "_id": "PTA2.3",
+  "title": "产生 B 个 A 组成的数字",
+  "url": "https://xmuoj.com/tc/s/caae2ab9261e964345c6",
+  "crumb": "《公共课 PTA 题库》参考题解 · 第二周 顺序结构编程",
+  "secs": [
+   "原题",
+   "归纳",
+   "参考代码（Python3 · 带注释）",
+   "另一种写法"
+  ],
+  "codes": [
+   "a, b = input().split(',')\na = a.strip()          # 去掉两端空格，保持字符串\nb = int(b.strip())     # B 要当整数用（重复次数）\nprint(a * b)           # 字符串 × 整数 = 重复拼接",
+   "# 第二实现：不用字符串重复，改用数学公式 AA...A = A × (10^B − 1) / 9\na, b = (t.strip() for t in input().split(\",\"))\nprint(int(a) * (10 ** int(b) - 1) // 9)"
+  ]
+ },
+ {
+  "_id": "PTA3.1",
+  "title": "回文诗",
+  "url": "https://xmuoj.com/tc/s/ba2f389088f8c7071674",
+  "crumb": "《公共课 PTA 题库》参考题解 · 第三周 列表、字符串练习",
+  "secs": [
+   "原题",
+   "归纳",
+   "参考代码（Python3 · 带注释）",
+   "另一种写法"
+  ],
+  "codes": [
+   "s = input()\n# 切片语法:s[开始 : 结束 : 步长]\nprint(s[::-1])   # 步长 -1:从最后一个字符倒着走到开头",
+   "# 第二实现：用 reversed() + join 反转，而不是步长为 -1 的切片\nprint(\"\".join(reversed(input())))"
+  ]
+ },
+ {
+  "_id": "PTA3.2",
+  "title": "学号解析",
+  "url": "https://xmuoj.com/tc/s/e54aaf96b152056bb9a8",
+  "crumb": "《公共课 PTA 题库》参考题解 · 第三周 列表、字符串练习",
+  "secs": [
+   "原题",
+   "归纳",
+   "参考代码（Python3 · 带注释）",
+   "另一种写法"
+  ],
+  "codes": [
+   "sid = input()\ny = sid[0:4]\nd = sid[4:6]\nc = sid[6:8]\nprint(f\"year:{y}\")\nprint(f\"department:{d}\")\nprint(f\"class:{c}\")",
+   "# 第二实现：把三段切片写进表里循环输出，而不是三次手写 print\nsid = input()\nfor label, start, end in [(\"year\", 0, 4), (\"department\", 4, 6), (\"class\", 6, 8)]:\n    print(\"{}:{}\".format(label, sid[start:end]))"
+  ]
+ },
+ {
+  "_id": "PTA3.3",
+  "title": "平均值、最大值、最小值",
+  "url": "https://xmuoj.com/tc/s/00b7bbe444f208433f8a",
+  "crumb": "《公共课 PTA 题库》参考题解 · 第三周 列表、字符串练习",
+  "secs": [
+   "原题",
+   "归纳",
+   "参考代码（Python3 · 带注释）",
+   "另一种写法"
+  ],
+  "codes": [
+   "nums = list(map(int, input().split()))   # 一行多个整数的标准读法\navg = sum(nums) // len(nums)             # 整除取整:187//7 = 26\nprint(avg, max(nums), min(nums))",
+   "# 第二实现：先排序，再用 nums[-1] / nums[0] 取代 max() / min()\nimport sys\n\nnums = sorted(int(x) for x in sys.stdin.read().split())\nprint(sum(nums) // len(nums), nums[-1], nums[0])"
+  ]
+ },
+ {
+  "_id": "PTA3.4",
+  "title": "输出前 k 个字符串",
+  "url": "https://xmuoj.com/tc/s/f3bac05ddc75a08f9424",
+  "crumb": "《公共课 PTA 题库》参考题解 · 第三周 列表、字符串练习",
+  "secs": [
+   "原题",
+   "归纳",
+   "参考代码（Python3 · 带注释）",
+   "另一种写法"
+  ],
+  "codes": [
+   "data = input().split()    # 不带参数的 split 自动吸收「若干空格」\nk = int(data[0])          # 第一个元素是 k\nprint(*data[1:k+1])       # 切片取前 k 个字符串,* 解包交给 print",
+   "# 第二实现：用 \" \".join() 拼串，而不是 print(*...) 参数解包\ndata = input().split()\nk = int(data[0])\nprint(\" \".join(data[1:k + 1]))"
+  ]
+ },
+ {
+  "_id": "PTA3.5",
+  "title": "位数与各位数字之和",
+  "url": "https://xmuoj.com/tc/s/477a2a22ba1920019344",
+  "crumb": "《公共课 PTA 题库》参考题解 · 第三周 列表、字符串练习",
+  "secs": [
+   "原题",
+   "归纳",
+   "参考代码（Python3 · 带注释）",
+   "另一种写法"
+  ],
+  "codes": [
+   "n = input()               # 保持字符串\ntotal = 0\nfor ch in n:              # 直接遍历每个字符\n    total += int(ch)\nprint(len(n), total)\n# 一行流写法:print(len(n), sum(map(int, n)))",
+   "# 第二实现：不用 for 累加，用 sum(map(int, n)) 一行流\nn = input()\nprint(len(n), sum(map(int, n)))"
+  ]
+ },
+ {
+  "_id": "PTA3.6",
+  "title": "循环左移 N 次",
+  "url": "https://xmuoj.com/tc/s/74cfc97e96c1ad250aaa",
+  "crumb": "《公共课 PTA 题库》参考题解 · 第三周 列表、字符串练习",
+  "secs": [
+   "原题",
+   "归纳",
+   "参考代码（Python3 · 带注释）",
+   "另一种写法"
+  ],
+  "codes": [
+   "s = input()\nn = int(input())\nn = n % len(s)            # N 可能大于串长,先取余\nprint(s[n:] + s[:n])      # 后半段 + 前半段,切片直接拼接",
+   "# 第二实现：把串自我复制一遍再切片，而不是「后半段 + 前半段」拼接\ns = input()\nn = int(input()) % len(s)\nprint((s + s)[n:n + len(s)])"
+  ]
+ },
+ {
+  "_id": "PTA3.7",
+  "title": "计算是2024年的第几天",
+  "url": "https://xmuoj.com/tc/s/6f7c8bc9a0cdbd35c6fb",
+  "crumb": "《公共课 PTA 题库》参考题解 · 第三周 列表、字符串练习",
+  "secs": [
+   "原题",
+   "归纳",
+   "参考代码（Python3 · 带注释）",
+   "另一种写法"
+  ],
+  "codes": [
+   "month, day = map(int, input().split())\n# 2024 是闰年,2 月有 29 天\ndays = [31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]\nprint(sum(days[:month-1]) + day)",
+   "# 第二实现：用标准库 calendar 查每月天数，而不是手写 12 个月的天数表\nimport calendar\n\nmonth, day = map(int, input().split())\nprint(sum(calendar.monthrange(2024, m)[1] for m in range(1, month)) + day)"
+  ]
+ },
+ {
+  "_id": "PTA3.8",
+  "title": "可重组相等(字母异位词)",
+  "url": "https://xmuoj.com/tc/s/d85ebcf1e2b0097fd714",
+  "crumb": "《公共课 PTA 题库》参考题解 · 第三周 列表、字符串练习",
+  "secs": [
+   "原题",
+   "归纳",
+   "参考代码（Python3 · 带注释）",
+   "另一种写法"
+  ],
+  "codes": [
+   "s1, s2 = input().split()\nprint(sorted(s1) == sorted(s2))",
+   "# 第二实现：用 collections.Counter 数字符个数，而不是排序后比列表\nfrom collections import Counter\n\ns1, s2 = input().split()\nprint(Counter(s1) == Counter(s2))"
+  ]
+ },
+ {
+  "_id": "PTA3.9",
+  "title": "奇偶下标拆分重组",
+  "url": "https://xmuoj.com/tc/s/8f062ece6dc21b7a1324",
+  "crumb": "《公共课 PTA 题库》参考题解 · 第三周 列表、字符串练习",
+  "secs": [
+   "原题",
+   "归纳",
+   "参考代码（Python3 · 带注释）",
+   "另一种写法"
+  ],
+  "codes": [
+   "s = input()\na = s[0::2]     # 偶数下标:0,2,4,...(也可简写 s[::2])\nb = s[1::2]     # 奇数下标:1,3,5,...\nprint(a)\nprint(b)\nprint(a + b)",
+   "# 第二实现：用 enumerate + 条件筛选，而不是步长为 2 的切片\ns = input()\na = \"\".join(ch for i, ch in enumerate(s) if i % 2 == 0)\nb = \"\".join(ch for i, ch in enumerate(s) if i % 2 == 1)\nprint(a)\nprint(b)\nprint(a + b)"
+  ]
+ },
+ {
+  "_id": "PTA3.10",
+  "title": "歌手打分(去2个最高、2个最低)",
+  "url": "https://xmuoj.com/tc/s/be4589757a7e5e170b59",
+  "crumb": "《公共课 PTA 题库》参考题解 · 第三周 列表、字符串练习",
+  "secs": [
+   "原题",
+   "归纳",
+   "参考代码（Python3 · 带注释）",
+   "另一种写法"
+  ],
+  "codes": [
+   "n = int(input())\nscores = list(map(float, input().split()))\n\nscores.sort()                 # 从小到大排序\nvalid = scores[2:-2]          # 切掉头2个(最低)和尾2个(最高)\navg = sum(valid) / len(valid)\n\nprint(f\"aver={avg:.2f}\")      # :.2f 保留两位小数",
+   "# 第二实现：逐个 remove(max)/remove(min) 去掉 2 高 2 低，而不是排序后切 [2:-2]\nn = int(input())\nscores = list(map(float, input().split()))\n\nwork = scores[:]\nfor _ in range(2):\n    work.remove(max(work))      # 去掉一个最高分\n    work.remove(min(work))      # 去掉一个最低分\n\navg = sum(work) / len(work)\nprint(\"aver={:.2f}\".format(avg))"
+  ]
+ },
+ {
+  "_id": "PTA4.1",
+  "title": "时间换算(用 format 控制输出)",
+  "url": "https://xmuoj.com/tc/s/ed0ca7b686b6562aa6a7",
+  "crumb": "《公共课 PTA 题库》参考题解 · 第四周 format、选择结构",
+  "secs": [
+   "原题",
+   "归纳",
+   "参考代码（Python3 · 带注释）",
+   "另一种写法"
+  ],
+  "codes": [
+   "h, m, s = map(int, input().split(':'))   # 按冒号切分\ntotal = h * 3600 + m * 60 + s\nprint(total)\n\nsec = int(input())\nhour   = sec // 3600\nminute = sec % 3600 // 60\nsecond = sec % 60\nprint(f\"{hour:02d}:{minute:02d}:{second:02d}\")   # :02d 两位补零",
+   "# 第二实现：累加求和 + divmod 逐级取余 + format()/zfill() 拼串\nh, m, s = map(int, input().split(':'))\n\ntotal = 0\nfor value, weight in ((h, 3600), (m, 60), (s, 1)):\n    total += value * weight\nprint(total)\n\nsec = int(input())\nhour, rest = divmod(sec, 3600)\nminute, second = divmod(rest, 60)\nprint(\"{}:{}:{}\".format(str(hour).zfill(2), str(minute).zfill(2), str(second).zfill(2)))"
+  ]
+ },
+ {
+  "_id": "PTA4.2",
+  "title": "三角形面积与周长(用 format 控制输出)",
+  "url": "https://xmuoj.com/tc/s/14b1c5225880170d90d3",
+  "crumb": "《公共课 PTA 题库》参考题解 · 第四周 format、选择结构",
+  "secs": [
+   "原题",
+   "归纳",
+   "参考代码（Python3 · 带注释）",
+   "另一种写法"
+  ],
+  "codes": [
+   "import math\na = int(input()); b = int(input()); c = int(input())\ns = (a + b + c) / 2\narea = math.sqrt(s * (s - a) * (s - b) * (s - c))\nperimeter = a + b + c\nprint(f\"area={area:.2f};perimeter={perimeter:.2f}\")",
+   "# 第二实现：海伦公式的整数形式 16A² =(a+b+c)(-a+b+c)(a-b+c)(a+b-c)，用 format() 拼串\nimport math\na = int(input())\nb = int(input())\nc = int(input())\n\np16 = (a + b + c) * (-a + b + c) * (a - b + c) * (a + b - c)\narea = math.sqrt(p16) / 4\nperimeter = sum([a, b, c])\nprint(\"area={};perimeter={}\".format(format(area, \".2f\"), format(perimeter, \".2f\")))"
+  ]
+ },
+ {
+  "_id": "PTA4.3",
+  "title": "圆的面积(用 format 控制输出)",
+  "url": "https://xmuoj.com/tc/s/86aee56eabea7ea8c755",
+  "crumb": "《公共课 PTA 题库》参考题解 · 第四周 format、选择结构",
+  "secs": [
+   "原题",
+   "归纳",
+   "参考代码（Python3 · 带注释）",
+   "另一种写法"
+  ],
+  "codes": [
+   "import math\nr = float(input())            # 半径可能是小数,用 float\narea = math.pi * r ** 2\nprint(f\"{area:.2f}\")",
+   "# 第二实现：math.pow() 求幂、乘法顺序调换、用 format() 代替 f-string\nimport math\nr = float(input())\nprint(\"{:.2f}\".format(math.pow(r, 2) * math.pi))"
+  ]
+ },
+ {
+  "_id": "PTA4.4",
+  "title": "奇偶判断",
+  "url": "https://xmuoj.com/tc/s/d804db06db746564d881",
+  "crumb": "《公共课 PTA 题库》参考题解 · 第四周 format、选择结构",
+  "secs": [
+   "原题",
+   "归纳",
+   "参考代码（Python3 · 带注释）",
+   "另一种写法"
+  ],
+  "codes": [
+   "n = int(input())\nif n % 2 == 0:\n    print(\"该数是偶数\")\nelse:\n    print(\"该数是奇数\")",
+   "# 第二实现：用 divmod() 取余（Python 里对负数余数也总是 0 或 1），查表输出\nn = int(input())\n_, remainder = divmod(n, 2)\nprint(\"该数是奇数\" if remainder else \"该数是偶数\")"
+  ]
+ },
+ {
+  "_id": "PTA4.5",
+  "title": "因子判断(能整除)",
+  "url": "https://xmuoj.com/tc/s/64df1bdf40a6def878a1",
+  "crumb": "《公共课 PTA 题库》参考题解 · 第四周 format、选择结构",
+  "secs": [
+   "原题",
+   "归纳",
+   "参考代码（Python3 · 带注释）",
+   "另一种写法"
+  ],
+  "codes": [
+   "a, b = map(int, input().split())\nif (b != 0 and a % b == 0) or (a != 0 and b % a == 0):\n    print(\"能整除\")\nelse:\n    print(\"不能整除\")",
+   "# 第二实现：把两个方向整理成 (除数, 被除数) 序列，交给 any() 判断\na, b = map(int, input().split())\npairs = ((a, b), (b, a))\nprint(\"能整除\" if any(d != 0 and n % d == 0 for d, n in pairs) else \"不能整除\")"
+  ]
+ },
+ {
+  "_id": "PTA4.6",
+  "title": "三角形构成判断",
+  "url": "https://xmuoj.com/tc/s/a1b8aa034b28d4e7015b",
+  "crumb": "《公共课 PTA 题库》参考题解 · 第四周 format、选择结构",
+  "secs": [
+   "原题",
+   "归纳",
+   "参考代码（Python3 · 带注释）",
+   "另一种写法"
+  ],
+  "codes": [
+   "a, b, c = map(int, input().split())\nif a + b > c and a + c > b and b + c > a:\n    print(\"yes\")\nelse:\n    print(\"no\")",
+   "# 第二实现：先排序，只需比较「两条短边之和 > 最长边」\nx, y, z = sorted(map(int, input().split()))\nprint(\"yes\" if x + y > z else \"no\")"
+  ]
+ },
+ {
+  "_id": "PTA4.7",
+  "title": "闰年判断",
+  "url": "https://xmuoj.com/tc/s/b335f141b3837cd7711b",
+  "crumb": "《公共课 PTA 题库》参考题解 · 第四周 format、选择结构",
+  "secs": [
+   "原题",
+   "归纳",
+   "参考代码（Python3 · 带注释）",
+   "另一种写法"
+  ],
+  "codes": [
+   "year = int(input())\nif (year % 4 == 0 and year % 100 != 0) or year % 400 == 0:\n    print(f\"{year}是闰年\")\nelse:\n    print(f\"{year}不是闰年\")",
+   "# 第二实现：直接用标准库 calendar.isleap()，只自己拼输出\nimport calendar\nyear = int(input())\nprint(\"{}是闰年\".format(year) if calendar.isleap(year) else \"{}不是闰年\".format(year))"
+  ]
+ },
+ {
+  "_id": "PTA4.8",
+  "title": "分段函数",
+  "url": "https://xmuoj.com/tc/s/b24faa29d54ea90f9bf9",
+  "crumb": "《公共课 PTA 题库》参考题解 · 第四周 format、选择结构",
+  "secs": [
+   "原题",
+   "归纳",
+   "参考代码（Python3 · 带注释）",
+   "另一种写法"
+  ],
+  "codes": [
+   "x = float(input())\nif x < 0:\n    print(0)\nelif 0 <= x < 5:        # Python 支持链式比较\n    print(x)\nelif 5 <= x < 10:\n    print(3 * x - 5)\nelif 10 <= x < 20:\n    print(0.5 * x - 2)\nelse:\n    print(0)",
+   "# 第二实现：表驱动——把区间和对应算式放进元组里循环匹配，代替 if-elif 链\nimport math\nx = float(input())\nsegments = (\n    (-math.inf, 0.0, lambda t: 0),\n    (0.0, 5.0, lambda t: t),\n    (5.0, 10.0, lambda t: 3 * t - 5),\n    (10.0, 20.0, lambda t: 0.5 * t - 2),\n    (20.0, math.inf, lambda t: 0),\n)\nfor low, high, rule in segments:\n    if low <= x < high:\n        print(rule(x))\n        break"
+  ]
+ },
+ {
+  "_id": "PTA4.9",
+  "title": "5位回文数",
+  "url": "https://xmuoj.com/tc/s/15c07ca09c9bbe688325",
+  "crumb": "《公共课 PTA 题库》参考题解 · 第四周 format、选择结构",
+  "secs": [
+   "原题",
+   "归纳",
+   "参考代码（Python3 · 带注释）",
+   "另一种写法"
+  ],
+  "codes": [
+   "n = input()                  # 保持字符串\nif n == n[::-1]:             # 反转后比较\n    print(\"yes\")\nelse:\n    print(\"no\")",
+   "# 第二实现：不反转字符串，用 // 和 % 把万位与个位、千位与十位逐位取出来比\nn = int(input())\nwan = n // 10000\nqian = n // 1000 % 10\nshi = n // 10 % 10\nge = n % 10\nprint(\"yes\" if wan == ge and qian == shi else \"no\")"
+  ]
+ },
+ {
+  "_id": "PTA4.10",
+  "title": "四则运算(禁用 eval,练习多分支)",
+  "url": "https://xmuoj.com/tc/s/ff89c01671d726f94a03",
+  "crumb": "《公共课 PTA 题库》参考题解 · 第四周 format、选择结构",
+  "secs": [
+   "原题",
+   "归纳",
+   "参考代码（Python3 · 带注释）",
+   "另一种写法"
+  ],
+  "codes": [
+   "a, op, b, eq = input().split()   # 切成 4 段,最后的 '=' 收进 eq 不用管\na = int(a)\nb = int(b)\n\nif op == '+':\n    print(a + b)\nelif op == '-':\n    print(a - b)\nelif op == '*':\n    print(a * b)\nelif op == '/':\n    print(a / b)\nelif op == '//':\n    print(a // b)\nelif op == '%':\n    print(a % b)\nelse:\n    print(\"运算符错误\")",
+   "# 第二实现：用 operator 模块建运算表，按运算符查表调用，代替 if-elif 链\nimport operator\na, op, b, eq = input().split()\ntable = {\n    '+': operator.add,\n    '-': operator.sub,\n    '*': operator.mul,\n    '/': operator.truediv,\n    '//': operator.floordiv,\n    '%': operator.mod,\n}\nprint(table[op](int(a), int(b)) if op in table else \"运算符错误\")"
+  ]
+ },
+ {
+  "_id": "PTA6.1",
+  "title": "求偶数之和",
+  "url": "https://xmuoj.com/tc/s/c87f15c3767436aaa9a1",
+  "crumb": "《公共课 PTA 题库》参考题解 · 第六周 循环练习",
+  "secs": [
+   "原题",
+   "归纳",
+   "参考代码（Python3 · 带注释）",
+   "另一种写法"
+  ],
+  "codes": [
+   "total = 0\nfor i in range(0, 101, 2):   # 从 0 起每次 +2；终点写 101 才能取到 100\n    total += i\nprint(total)",
+   "# 第二实现：用条件筛选，而不是用步长跳过\nprint(sum(i for i in range(101) if i % 2 == 0))"
+  ]
+ },
+ {
+  "_id": "PTA6.2",
+  "title": "求阶乘",
+  "url": "https://xmuoj.com/tc/s/280a95f72c364e81acab",
+  "crumb": "《公共课 PTA 题库》参考题解 · 第六周 循环练习",
+  "secs": [
+   "原题",
+   "归纳",
+   "参考代码（Python3 · 带注释）",
+   "另一种写法"
+  ],
+  "codes": [
+   "n = int(input())\nresult = 1                  # 累乘的初始值必须是 1，写成 0 结果永远是 0\nfor i in range(1, n + 1):\n    result *= i\nprint(result)",
+   "# 第二实现：直接用标准库 math.factorial\nimport math\n\nprint(math.factorial(int(input())))"
+  ]
+ },
+ {
+  "_id": "PTA6.3",
+  "title": "统计正数和负数的个数",
+  "url": "https://xmuoj.com/tc/s/1b75f30f6bd2787b8454",
+  "crumb": "《公共课 PTA 题库》参考题解 · 第六周 循环练习",
+  "secs": [
+   "原题",
+   "归纳",
+   "参考代码（Python3 · 带注释）",
+   "另一种写法"
+  ],
+  "codes": [
+   "nums = [int(x) for x in input().split(',')]   # 注意是用逗号切分\n\npositive = 0\nnegative = 0\nfor x in nums:\n    if x > 0:\n        positive += 1\n    elif x < 0:\n        negative += 1\n\nprint(f\"{positive},{negative}\")\nprint(f\"{sum(nums) / len(nums):.2f}\")",
+   "# 第二实现:用生成器表达式计数、用 format() 格式化,不再手写 for + if\nnums = list(map(int, input().split(',')))\n\nprint(\"{},{}\".format(sum(1 for x in nums if x > 0),\n                     sum(1 for x in nums if x < 0)))\nprint(\"{:.2f}\".format(sum(nums) / len(nums)))"
+  ]
+ },
+ {
+  "_id": "PTA6.4",
+  "title": "求数列的前 n 项之和",
+  "url": "https://xmuoj.com/tc/s/8e6d6df69495eb894feb",
+  "crumb": "《公共课 PTA 题库》参考题解 · 第六周 循环练习",
+  "secs": [
+   "原题",
+   "归纳",
+   "参考代码（Python3 · 带注释）",
+   "另一种写法"
+  ],
+  "codes": [
+   "n = int(input())\n\na, b = 2, 1            # a 是分子,b 是分母(第一项 2/1)\ntotal = 0.0\nfor _ in range(n):\n    total += a / b\n    a, b = a + b, a    # 并行赋值:下一项分子 = a+b,下一项分母 = 原来的 a\n\nprint(f\"{total:.2f}\")",
+   "# 第二实现:先把斐波那契数列整列算出来,再按下标取每一项(不用并行赋值)\nn = int(input())\n\nfib = [1, 1]                    # 第 i 项的分子是 fib[i+1],分母是 fib[i]\nwhile len(fib) < n + 2:\n    fib.append(fib[-1] + fib[-2])\n\ntotal = 0.0\nfor i in range(1, n + 1):\n    total += fib[i + 1] / fib[i]\n\nprint(format(total, \".2f\"))"
+  ]
+ },
+ {
+  "_id": "PTA6.5",
+  "title": "找列表中最大元素的下标",
+  "url": "https://xmuoj.com/tc/s/efa113214611c1e206a8",
+  "crumb": "《公共课 PTA 题库》参考题解 · 第六周 循环练习",
+  "secs": [
+   "原题",
+   "归纳",
+   "参考代码（Python3 · 带注释）",
+   "另一种写法"
+  ],
+  "codes": [
+   "lst = [int(x) for x in input().split(',')]\n\nbiggest = max(lst)              # 先求出最大值\nfor i, v in enumerate(lst):     # enumerate 同时拿到下标和值\n    if v == biggest:\n        print(i)",
+   "# 第二实现:自己扫一遍找最大值(不用 max),再用列表推导收集下标、join 一次性输出\nlst = list(map(int, input().split(',')))\n\nbiggest = lst[0]\nfor x in lst[1:]:\n    if x > biggest:\n        biggest = x\n\nidxs = [i for i in range(len(lst)) if lst[i] == biggest]\nprint(\"\\n\".join(str(i) for i in idxs))"
+  ]
+ },
+ {
+  "_id": "PTA6.6",
+  "title": "成绩分段统计",
+  "url": "https://xmuoj.com/tc/s/1e246224cab91480931d",
+  "crumb": "《公共课 PTA 题库》参考题解 · 第六周 循环练习",
+  "secs": [
+   "原题",
+   "归纳",
+   "参考代码（Python3 · 带注释）",
+   "另一种写法"
+  ],
+  "codes": [
+   "scores = [int(x) for x in input().replace(',', ' ').split()]  # 逗号空格都切\ncount = [0] * 5              # 0:<60  1:60~69  2:70~79  3:80~89  4:>=90\nfor s in scores:\n    if s >= 90:   count[4] += 1\n    elif s >= 80: count[3] += 1\n    elif s >= 70: count[2] += 1\n    elif s >= 60: count[1] += 1\n    else:         count[0] += 1\nprint(f\"60分以下人数为{count[0]}\")\nprint(f\"[60,70)人数为{count[1]}\")\nprint(f\"[70-80)人数为{count[2]}\")\nprint(f\"[80-90)人数为{count[3]}\")\nprint(f\"90分以上的人数为{count[4]}\")",
+   "# 第二实现:用 bisect 在分界点上定位段号,不再写 if/elif 阶梯\nimport bisect\n\nBOUNDS = [60, 70, 80, 90]        # bisect_right 正好给出 0~4 的段号\nscores = [int(x) for x in input().replace(',', ' ').split()]\n\ncount = [0] * 5\nfor s in scores:\n    count[bisect.bisect_right(BOUNDS, s)] += 1\n\nprint(f\"60分以下人数为{count[0]}\")\nprint(f\"[60,70)人数为{count[1]}\")\nprint(f\"[70-80)人数为{count[2]}\")\nprint(f\"[80-90)人数为{count[3]}\")\nprint(f\"90分以上的人数为{count[4]}\")"
+  ]
+ },
+ {
+  "_id": "PTA6.7",
+  "title": "求忽略正负号的整数平均值",
+  "url": "https://xmuoj.com/tc/s/83faa1e977f947e86e68",
+  "crumb": "《公共课 PTA 题库》参考题解 · 第六周 循环练习",
+  "secs": [
+   "原题",
+   "归纳",
+   "参考代码（Python3 · 带注释）",
+   "另一种写法"
+  ],
+  "codes": [
+   "lst = eval(input())     # 输入本身就是列表字面量,eval 一步还原\n\ntotal = 0\nfor x in lst:\n    total += abs(x)     # abs() 取绝对值,即「忽略正负号」\n\nprint(f\"{total / len(lst):.2f}\")",
+   "# 第二实现:用 ast.literal_eval 安全地还原列表字面量(不用 eval),求和交给 sum(map(...))\nimport ast\n\nlst = ast.literal_eval(input())\n\nprint(\"{:.2f}\".format(sum(map(abs, lst)) / len(lst)))"
+  ]
+ },
+ {
+  "_id": "PTA6.8",
+  "title": "输出 1~100 之间能被 3 整除但不能被 5 整除的数",
+  "url": "https://xmuoj.com/tc/s/b380eda627b94c2767d5",
+  "crumb": "《公共课 PTA 题库》参考题解 · 第六周 循环练习",
+  "secs": [
+   "原题",
+   "归纳",
+   "参考代码（Python3 · 带注释）",
+   "另一种写法"
+  ],
+  "codes": [
+   "for i in range(1, 101):              # 1~100 都要,终点写 101\n    if i % 3 == 0 and i % 5 != 0:    # 是 3 的倍数 且 不是 5 的倍数\n        print(i)",
+   "# 第二实现:用 range 的步长直接生成 3 的倍数,再筛掉 5 的倍数(不做全范围遍历)\nfor i in range(3, 101, 3):\n    if i % 5:\n        print(i)"
+  ]
+ },
+ {
+  "_id": "PTA6.9",
+  "title": "python-循环:统计成绩",
+  "url": "https://xmuoj.com/tc/s/aed6b1088ab8c0c9b7bc",
+  "crumb": "《公共课 PTA 题库》参考题解 · 第六周 循环练习",
+  "secs": [
+   "原题",
+   "归纳",
+   "参考代码（Python3 · 带注释）",
+   "另一种写法"
+  ],
+  "codes": [
+   "total = 0\nn = 0               # 有效成绩的个数\nfail = 0            # 不及格人数\n\nwhile True:\n    score = int(input())\n    if score < 0:   # 负数 = 结束标志\n        break\n    total += score\n    n += 1\n    if score < 60:\n        fail += 1\n\nif n == 0:          # 先挡住「没有学生」,否则下面要除 0\n    print(\"没有学生\")\nelse:\n    print(f\"平均分={total / n:.2f},不及格人数={fail}\")",
+   "# 第二实现:一次读入全部数据,遇到第一个负数就截断(哨兵判断与统计分开做)\nimport sys\n\nscores = []\nfor token in sys.stdin.read().split():\n    value = int(token)\n    if value < 0:\n        break\n    scores.append(value)\n\nif not scores:\n    print(\"没有学生\")\nelse:\n    print(\"平均分={:.2f},不及格人数={}\".format(\n        sum(scores) / len(scores),\n        sum(1 for s in scores if s < 60)))"
+  ]
+ },
+ {
+  "_id": "PTA6.10",
+  "title": "超市营业额统计系统",
+  "url": "https://xmuoj.com/tc/s/b3fe5eb00bee8f6aea10",
+  "crumb": "《公共课 PTA 题库》参考题解 · 第六周 循环练习",
+  "secs": [
+   "原题",
+   "归纳",
+   "参考代码（Python3 · 带注释）",
+   "另一种写法"
+  ],
+  "codes": [
+   "n = int(input())\nsales = list(map(int, input().split()))   # 第二行的 n 个营业额\n\ntotal = sum(sales)\nprint(total)                              # ① 总营业额\n\naverage = total / n\nabove = 0\nfor x in sales:\n    if x > average:                       # 严格「高于」,不含等于\n        above += 1\nprint(above)                              # ② 高于平均值的天数\n\nprint(sales.index(max(sales)) + 1)         # ③ 最高的「第几天」,从 1 数起",
+   "# 第二实现:「高于平均值的天数」用列表推导统计;「最早的最大值」用 key=(−营业额, 下标)\n# 交给 min 一次挑出 —— 营业额相同时下标小的那天更小,天然对应「并列取最早」\nn = int(input())\nsales = list(map(int, input().split()))\n\ntotal = sum(sales)\naverage = total / len(sales)\n\nabove = len([x for x in sales if x > average])\nbest = min(range(n), key=lambda i: (-sales[i], i))\n\nprint(total)\nprint(above)\nprint(best + 1)"
+  ]
+ },
+ {
+  "_id": "PTA7.1",
+  "title": "求最接近的值",
+  "url": "https://xmuoj.com/tc/s/c1f23800cc094bd6e37f",
+  "crumb": "《公共课 PTA 题库》参考题解 · 第七周 循环练习2",
+  "secs": [
+   "原题",
+   "归纳",
+   "参考代码（Python3 · 带注释）",
+   "另一种写法"
+  ],
+  "codes": [
+   "import sys\n\nx = float(sys.stdin.read().split()[0])\ns = 0.0\nbest_n, best_s, best_d = 0, 0.0, None\nn = 1\nwhile True:\n    s += 1.0 / n\n    d = abs(s - x)\n    if best_d is None or d < best_d:\n        best_d, best_n, best_s = d, n, s\n    if s - x > 0.5:          # 调和级数增长很慢，超过 x 足够远后不可能再更接近\n        break\n    n += 1\nprint(\"%.6f %d\" % (best_s, best_n))",
+   "import sys\n\ndef solve(x):\n    s, n, best = 0.0, 0, (None, None, None)\n    while True:\n        n += 1\n        s += 1 / n\n        diff = abs(x - s)\n        if best[0] is None or diff < best[0]:\n            best = (diff, s, n)\n        if s > x + 1:\n            return best[1], best[2]\n\ns_val, n_val = solve(float(sys.stdin.read().split()[0]))\nprint(f\"{s_val:.6f} {n_val}\")"
+  ]
+ },
+ {
+  "_id": "PTA7.2",
+  "title": "s=1+2+3+...+n 直到 s>=m",
+  "url": "https://xmuoj.com/tc/s/fa2d5ff84b93f53c5a87",
+  "crumb": "《公共课 PTA 题库》参考题解 · 第七周 循环练习2",
+  "secs": [
+   "原题",
+   "归纳",
+   "参考代码（Python3 · 带注释）",
+   "另一种写法"
+  ],
+  "codes": [
+   "import sys\n\nm = int(sys.stdin.read().split()[0])\ns = 0\nn = 0\nwhile s < m:\n    n += 1\n    s += n\nprint(f\"{s}=1+2+...+{n}\")",
+   "import sys\n\nm = int(sys.stdin.read().split()[0])\nn = 1\nwhile n * (n + 1) // 2 < m:      # 用求和公式逼近，再从 n 往回确认\n    n += 1\ns = n * (n - 1) // 2\nwhile s < m:\n    s += n\nelse:\n    print(\"%d=1+2+...+%d\" % (s, n))"
+  ]
+ },
+ {
+  "_id": "PTA7.3",
+  "title": "求 1!+2!+3!+...+n!",
+  "url": "https://xmuoj.com/tc/s/39e6f01a6eb2fcf6f6d2",
+  "crumb": "《公共课 PTA 题库》参考题解 · 第七周 循环练习2",
+  "secs": [
+   "原题",
+   "归纳",
+   "参考代码（Python3 · 带注释）",
+   "另一种写法"
+  ],
+  "codes": [
+   "import sys\n\nn = int(sys.stdin.read().split()[0])\ntotal = 0\nterm = 1\nfor i in range(1, n + 1):\n    term *= i\n    total += term\nprint(total)",
+   "import sys\nfrom math import factorial\n\nn = int(sys.stdin.read().split()[0])\nprint(sum(factorial(i) for i in range(1, n + 1)))"
+  ]
+ },
+ {
+  "_id": "PTA7.4",
+  "title": "输出一组数，一行8个",
+  "url": "https://xmuoj.com/tc/s/d0b12378ccadb09aa282",
+  "crumb": "《公共课 PTA 题库》参考题解 · 第七周 循环练习2",
+  "secs": [
+   "原题",
+   "归纳",
+   "参考代码（Python3 · 带注释）",
+   "另一种写法"
+  ],
+  "codes": [
+   "import sys\n\nn = int(sys.stdin.read().split()[0])\nbuf = []\nfor i in range(1, n):\n    if i % 5 == 0 or i % 7 == 0:\n        buf.append(str(i))\n\nlines = [\" \".join(buf[i:i + 8]) for i in range(0, len(buf), 8)]\nsys.stdout.write(\"\\n\".join(lines))\nif lines:\n    sys.stdout.write(\"\\n\")",
+   "import sys\n\nn = int(sys.stdin.read().split()[0])\nnums = [x for x in range(1, n) if x % 5 == 0 or x % 7 == 0]\nout = []\nfor idx, x in enumerate(nums, 1):\n    out.append(str(x))\n    out.append(\"\\n\" if idx % 8 == 0 else \" \")\nprint(\"\".join(out).rstrip())"
+  ]
+ },
+ {
+  "_id": "PTA7.5",
+  "title": "判断是否为等差数列",
+  "url": "https://xmuoj.com/tc/s/91f2395a8b8452dd0178",
+  "crumb": "《公共课 PTA 题库》参考题解 · 第七周 循环练习2",
+  "secs": [
+   "原题",
+   "归纳",
+   "参考代码（Python3 · 带注释）",
+   "另一种写法"
+  ],
+  "codes": [
+   "import sys\n\ndata = sys.stdin.read().split()\nn = int(data[0])\na = [int(x) for x in data[1:1 + n]]\nok = True\nif n >= 3:\n    d = a[1] - a[0]\n    for i in range(2, n):\n        if a[i] - a[i - 1] != d:\n            ok = False\n            break\nprint(\"True\" if ok else \"False\")",
+   "import sys\n\ndata = sys.stdin.read().split()\nn = int(data[0])\nnums = list(map(int, data[1:1 + n]))\ndiffs = {nums[i] - nums[i - 1] for i in range(1, n)}\nprint(\"True\" if len(diffs) <= 1 else \"False\")"
+  ]
+ },
+ {
+  "_id": "PTA7.6",
+  "title": "求一组数的最大值",
+  "url": "https://xmuoj.com/tc/s/44db1f76b3db967594e4",
+  "crumb": "《公共课 PTA 题库》参考题解 · 第七周 循环练习2",
+  "secs": [
+   "原题",
+   "归纳",
+   "参考代码（Python3 · 带注释）",
+   "另一种写法"
+  ],
+  "codes": [
+   "import sys\n\nbest_val = None\nbest_txt = None\nfor line in sys.stdin.read().splitlines():\n    txt = line.strip()\n    if txt == \"\":\n        break\n    val = eval(txt)\n    if best_val is None or val > best_val:\n        best_val, best_txt = val, txt\nprint(best_txt)",
+   "import sys\n\nlines = sys.stdin.read().split(\"\\n\")\nbest = None\nfor raw in lines:\n    s = raw.strip()\n    if not s:\n        break\n    v = eval(s)\n    if best is None or v > best[0]:\n        best = (v, s)\nprint(best[1])"
+  ]
+ },
+ {
+  "_id": "PTA7.7",
+  "title": "血压正常的最长小时数",
+  "url": "https://xmuoj.com/tc/s/7623eb4e682312244dc3",
+  "crumb": "《公共课 PTA 题库》参考题解 · 第七周 循环练习2",
+  "secs": [
+   "原题",
+   "归纳",
+   "参考代码（Python3 · 带注释）",
+   "另一种写法"
+  ],
+  "codes": [
+   "import sys\n\ndata = sys.stdin.read().split()\nn = int(data[0])\nbest = cur = 0\nidx = 1\nfor _ in range(n):\n    sbp, dbp = int(data[idx]), int(data[idx + 1])\n    idx += 2\n    if 90 <= sbp <= 140 and 60 <= dbp <= 90:\n        cur += 1\n        if cur > best:\n            best = cur\n    else:\n        cur = 0\nprint(best)",
+   "import sys\n\ntokens = sys.stdin.read().split()\nn = int(tokens[0])\npairs = [(int(tokens[1 + 2 * i]), int(tokens[2 + 2 * i])) for i in range(n)]\nflags = [1 if (90 <= a <= 140 and 60 <= b <= 90) else 0 for a, b in pairs]\nbest = cur = 0\nfor f in flags:\n    cur = cur + 1 if f else 0\n    best = cur if cur > best else best\nprint(best)"
+  ]
+ },
+ {
+  "_id": "PTA7.8",
+  "title": "考拉兹猜想",
+  "url": "https://xmuoj.com/tc/s/a9d6649feaa4b62cfff5",
+  "crumb": "《公共课 PTA 题库》参考题解 · 第七周 循环练习2",
+  "secs": [
+   "原题",
+   "归纳",
+   "参考代码（Python3 · 带注释）",
+   "另一种写法"
+  ],
+  "codes": [
+   "import sys\n\nn = int(sys.stdin.read().split()[0])\nseq = []\nwhile n != 1:\n    n = n * 3 + 1 if n % 2 else n // 2\n    seq.append(str(n))\nprint(\",\".join(seq))",
+   "import sys\n\nn = int(sys.stdin.read().split()[0])\nout = []\nwhile True:\n    if n % 2 == 1:\n        n = 3 * n + 1\n    else:\n        n = n // 2\n    out.append(n)\n    if n == 1:\n        break\nsys.stdout.write(\",\".join(map(str, out)) + \"\\n\")"
+  ]
+ },
+ {
+  "_id": "PTA7.9",
+  "title": "jmu-python-素数",
+  "url": "https://xmuoj.com/tc/s/f70b1261b6dffa275880",
+  "crumb": "《公共课 PTA 题库》参考题解 · 第七周 循环练习2",
+  "secs": [
+   "原题",
+   "归纳",
+   "参考代码（Python3 · 带注释）",
+   "另一种写法"
+  ],
+  "codes": [
+   "import sys\n\nn = int(sys.stdin.read().split()[0])\nprime = n > 1\nd = 2\nwhile d * d <= n:\n    if n % d == 0:\n        prime = False\n        break\n    d += 1\nprint(f\"{n} is prime\" if prime else f\"{n} is not prime\")",
+   "import sys\n\nn = int(sys.stdin.read().split()[0])\ntry:\n    for d in range(2, int(n ** 0.5) + 1):\n        if n % d == 0:\n            raise ValueError\n    if n <= 1:\n        raise ValueError\n    print(\"{} is prime\".format(n))\nexcept ValueError:\n    print(\"{} is not prime\".format(n))"
+  ]
+ },
+ {
+  "_id": "PTA7.10",
+  "title": "判断回文对联",
+  "url": "https://xmuoj.com/tc/s/7c43c45990ac49727994",
+  "crumb": "《公共课 PTA 题库》参考题解 · 第七周 循环练习2",
+  "secs": [
+   "原题",
+   "归纳",
+   "参考代码（Python3 · 带注释）",
+   "另一种写法"
+  ],
+  "codes": [
+   "import sys\n\ns = sys.stdin.readline().rstrip(\"\\n\")\nlow, high = 0, len(s) - 1\nok = True\nwhile low < high:\n    if s[low] != s[high]:\n        ok = False\n        break\n    low += 1\n    high -= 1\nprint(s, \"是回文对联\" if ok else \"不是回文对联\")",
+   "import sys\n\ns = sys.stdin.readline().rstrip(\"\\n\")\nprint(s, \"是回文对联\" if s == s[::-1] else \"不是回文对联\")"
+  ]
+ },
+ {
+  "_id": "PTA8.1",
+  "title": "判断一组非负整数是不是素数",
+  "url": "https://xmuoj.com/tc/s/ea22ec8441fbba18520c",
+  "crumb": "《公共课 PTA 题库》参考题解 · 第八周 循环练习3",
+  "secs": [
+   "原题",
+   "归纳",
+   "参考代码（Python3 · 带注释）",
+   "另一种写法"
+  ],
+  "codes": [
+   "import sys\n\n\ndef is_prime(n):\n    if n < 2:\n        return False\n    if n % 2 == 0:\n        return n == 2\n    d = 3\n    while d * d <= n:\n        if n % d == 0:\n            return False\n        d += 2\n    return True\n\n\nres = []\nfor tok in sys.stdin.read().split():\n    if tok == \"end\":\n        break\n    res.append(\"yes\" if is_prime(int(tok)) else \"no\")\nprint(\" \".join(res))",
+   "import sys\nfrom math import isqrt\n\n\ndef prime(x):\n    if x < 2:\n        return False\n    for i in range(2, isqrt(x) + 1):\n        if x % i == 0:\n            return False\n    return True\n\n\nanswers = []\nfor line in sys.stdin:\n    s = line.strip()\n    if not s:\n        continue\n    if s == \"end\":\n        break\n    answers.append(\"yes\" if prime(int(s)) else \"no\")\nprint(\" \".join(answers))"
+  ]
+ },
+ {
+  "_id": "PTA8.2",
+  "title": "输出满足公式的数",
+  "url": "https://xmuoj.com/tc/s/49ae8c01592af658e2e3",
+  "crumb": "《公共课 PTA 题库》参考题解 · 第八周 循环练习3",
+  "secs": [
+   "原题",
+   "归纳",
+   "参考代码（Python3 · 带注释）",
+   "另一种写法"
+  ],
+  "codes": [
+   "n = int(input())\nfor a in range(1, 10):\n    for b in range(0, 10):\n        ab = 10 * a + b\n        if ab <= n and ab - (10 * b + a) == 9:\n            print(ab)",
+   "n = int(input())\nres = []\nfor a in range(1, 10):\n    b = a - 1\n    ab = 10 * a + b\n    if ab <= n:\n        res.append(ab)\nprint(\"\\n\".join(str(x) for x in res))"
+  ]
+ },
+ {
+  "_id": "PTA8.3",
+  "title": "区间内的完全数",
+  "url": "https://xmuoj.com/tc/s/9433ea17c26406c76bd4",
+  "crumb": "《公共课 PTA 题库》参考题解 · 第八周 循环练习3",
+  "secs": [
+   "原题",
+   "归纳",
+   "参考代码（Python3 · 带注释）",
+   "另一种写法"
+  ],
+  "codes": [
+   "import sys\n\n\ndef perfect(n):\n    if n < 2:\n        return False\n    s = 1\n    d = 2\n    while d * d <= n:\n        if n % d == 0:\n            s += d\n            if d != n // d:\n                s += n // d\n        d += 1\n    return s == n\n\n\na, b = map(int, sys.stdin.read().split())\nfor x in range(a, b + 1):\n    if perfect(x):\n        print(x)",
+   "import sys\nfrom math import isqrt\n\n\ndef is_perfect(x):\n    if x <= 1:\n        return False\n    total = 0\n    for d in range(1, isqrt(x) + 1):\n        if x % d == 0:\n            total += d\n            q = x // d\n            if q != x and q != d:\n                total += q\n    return total == x\n\n\na, b = map(int, sys.stdin.read().split())\nres = [str(x) for x in range(a, b + 1) if is_perfect(x)]\nif res:\n    print(\"\\n\".join(res))"
+  ]
+ },
+ {
+  "_id": "PTA8.4",
+  "title": "计算最大公约数",
+  "url": "https://xmuoj.com/tc/s/8f990886e9e5789b15c8",
+  "crumb": "《公共课 PTA 题库》参考题解 · 第八周 循环练习3",
+  "secs": [
+   "原题",
+   "归纳",
+   "参考代码（Python3 · 带注释）",
+   "另一种写法"
+  ],
+  "codes": [
+   "import sys\n\n\ndef gcd(a, b):\n    while b:\n        a, b = b, a % b\n    return a\n\n\nm, n = map(int, sys.stdin.read().split())\nprint(gcd(m, n))",
+   "from math import gcd\nimport sys\n\na, b = map(int, sys.stdin.read().split())\nprint(gcd(a, b))"
+  ]
+ },
+ {
+  "_id": "PTA8.5",
+  "title": "列表元素转换2",
+  "url": "https://xmuoj.com/tc/s/49ef24c5716f3edb8190",
+  "crumb": "《公共课 PTA 题库》参考题解 · 第八周 循环练习3",
+  "secs": [
+   "原题",
+   "归纳",
+   "参考代码（Python3 · 带注释）",
+   "另一种写法"
+  ],
+  "codes": [
+   "lst = eval(input())\nres = []\nfor x in lst:\n    if x % 2:\n        res.append(x * x)\n    else:\n        res.append(x)\nprint(res)",
+   "v = eval(input())\nprint([x ** 2 if x % 2 != 0 else x for x in v])"
+  ]
+ },
+ {
+  "_id": "PTA8.6",
+  "title": "偶数移动到末尾",
+  "url": "https://xmuoj.com/tc/s/96ab4418bb68efc84895",
+  "crumb": "《公共课 PTA 题库》参考题解 · 第八周 循环练习3",
+  "secs": [
+   "原题",
+   "归纳",
+   "参考代码（Python3 · 带注释）",
+   "另一种写法"
+  ],
+  "codes": [
+   "nums = list(map(int, input().split()))\nodd, even = [], []\nfor x in nums:\n    if x % 2:\n        odd.append(x)\n    else:\n        even.append(x)\nprint(odd + even)",
+   "v = list(map(int, input().split()))\nprint([x for x in v if x % 2 != 0] + [x for x in v if x % 2 == 0])"
+  ]
+ },
+ {
+  "_id": "PTA8.7",
+  "title": "判断元音字母开头的单词",
+  "url": "https://xmuoj.com/tc/s/de8aedd9d66cd0a6eab8",
+  "crumb": "《公共课 PTA 题库》参考题解 · 第八周 循环练习3",
+  "secs": [
+   "原题",
+   "归纳",
+   "参考代码（Python3 · 带注释）",
+   "另一种写法"
+  ],
+  "codes": [
+   "import sys\n\nlines = sys.stdin.read().split()\nn = int(lines[0])\nfor w in lines[1:1 + n]:\n    if w[0].lower() in \"aeiou\":\n        print(w)",
+   "import sys\n\ndata = sys.stdin.read().splitlines()\nn = int(data[0].strip())\nvowels = set(\"aeiouAEIOU\")\nout = []\nfor i in range(1, n + 1):\n    w = data[i].strip()\n    if w and w[0] in vowels:\n        out.append(w)\nif out:\n    print(\"\\n\".join(out))"
+  ]
+ },
+ {
+  "_id": "PTA8.8",
+  "title": "提取数字字符",
+  "url": "https://xmuoj.com/tc/s/01535f9e4ba748208312",
+  "crumb": "《公共课 PTA 题库》参考题解 · 第八周 循环练习3",
+  "secs": [
+   "原题",
+   "归纳",
+   "参考代码（Python3 · 带注释）",
+   "另一种写法"
+  ],
+  "codes": [
+   "s = input()\ndigits = []\nfor c in s:\n    if \"0\" <= c <= \"9\":\n        digits.append(c)\nif digits:\n    digits.sort(reverse=True)\n    print(\"\".join(digits))\nelse:\n    print(\"no\")",
+   "s = input()\nds = sorted((c for c in s if c.isascii() and c.isdigit()), reverse=True)\nprint(\"\".join(ds) if ds else \"no\")"
+  ]
+ },
+ {
+  "_id": "PTA8.9",
+  "title": "求最大因子",
+  "url": "https://xmuoj.com/tc/s/6d73bb9df775717c9b92",
+  "crumb": "《公共课 PTA 题库》参考题解 · 第八周 循环练习3",
+  "secs": [
+   "原题",
+   "归纳",
+   "参考代码（Python3 · 带注释）",
+   "另一种写法"
+  ],
+  "codes": [
+   "n = int(input())\ni = n - 1\nwhile i > 1:\n    if n % i == 0:\n        print(i)\n        break\n    i -= 1\nelse:\n    print(\"NO\")",
+   "n = int(input())\nif n < 4:\n    print(\"NO\")\nelse:\n    p = 0\n    d = 2\n    while d * d <= n:\n        if n % d == 0:\n            p = d\n            break\n        d += 1\n    print(n // p if p else \"NO\")"
+  ]
+ },
+ {
+  "_id": "PTA8.10",
+  "title": "求最小因子",
+  "url": "https://xmuoj.com/tc/s/8e1746ca8c55b7bad0a9",
+  "crumb": "《公共课 PTA 题库》参考题解 · 第八周 循环练习3",
+  "secs": [
+   "原题",
+   "归纳",
+   "参考代码（Python3 · 带注释）",
+   "另一种写法"
+  ],
+  "codes": [
+   "n = int(input())\nfor i in range(2, n):\n    if n % i == 0:\n        print(i)\n        break\nelse:\n    print(\"NO\")",
+   "n = int(input())\nd = 2\nwhile d * d <= n:\n    if n % d == 0:\n        break\n    d += 1\nprint(d if d * d <= n else \"NO\")"
+  ]
+ },
+ {
+  "_id": "PTA8.11",
+  "title": "列表统计",
+  "url": "https://xmuoj.com/tc/s/04fcbd9d2be8dfb648ce",
+  "crumb": "《公共课 PTA 题库》参考题解 · 第八周 循环练习3",
+  "secs": [
+   "原题",
+   "归纳",
+   "参考代码（Python3 · 带注释）",
+   "另一种写法"
+  ],
+  "codes": [
+   "v = eval(input())\nprint(max(v))\nprint(min(v))\nprint(sum(v))\nprint(\"%.2f\" % (sum(v) / len(v)))",
+   "v = eval(input())\nsv = sorted(v)\nprint(sv[-1])\nprint(sv[0])\nprint(sum(sv))\nprint(\"%.2f\" % (sum(sv) / len(sv)))"
+  ]
+ },
+ {
+  "_id": "PTA8.12",
+  "title": "去除列表中的重复元素并排序",
+  "url": "https://xmuoj.com/tc/s/09f9bddf556b35996fc5",
+  "crumb": "《公共课 PTA 题库》参考题解 · 第八周 循环练习3",
+  "secs": [
+   "原题",
+   "归纳",
+   "参考代码（Python3 · 带注释）",
+   "另一种写法"
+  ],
+  "codes": [
+   "original_list = eval(input())\nunique_list = []\nfor item in original_list:\n    if item not in unique_list:\n        unique_list.append(item)\nunique_list.sort()\nprint(unique_list)",
+   "lst = eval(input())\nprint(sorted(set(lst)))"
+  ]
+ },
+ {
+  "_id": "PTA10.1",
+  "title": "数字转换为星期",
+  "url": "https://xmuoj.com/tc/s/c3782675c4d46c07371b",
+  "crumb": "《公共课 PTA 题库》参考题解 · 第十周 字典1",
+  "secs": [
+   "原题",
+   "归纳",
+   "参考代码（Python3 · 带注释）",
+   "另一种写法"
+  ],
+  "codes": [
+   "days = {1: \"Mon\", 2: \"Tue\", 3: \"Wed\", 4: \"Thu\", 5: \"Fri\", 6: \"Sat\", 7: \"Sun\"}\nn = int(input())\nprint(days[n])",
+   "# 用列表下标代替字典：下标 0 空着不用，days[n] 一样能取到\ndays = [\"\", \"Mon\", \"Tue\", \"Wed\", \"Thu\", \"Fri\", \"Sat\", \"Sun\"]\nprint(days[int(input())])"
+  ]
+ },
+ {
+  "_id": "PTA10.2",
+  "title": "将两个列表的对应元素构建字典",
+  "url": "https://xmuoj.com/tc/s/14ad71700f9e1bd7a897",
+  "crumb": "《公共课 PTA 题库》参考题解 · 第十周 字典1",
+  "secs": [
+   "原题",
+   "归纳",
+   "参考代码（Python3 · 带注释）",
+   "另一种写法"
+  ],
+  "codes": [
+   "keys = input().split()\nvalues = input().split()\nd = {}\nfor k, v in zip(keys, values):\n    d[k] = v\nprint(d)",
+   "# 一行写法：dict(zip(键列表, 值列表))，连循环都不用写\nkeys = input().split()\nvalues = input().split()\nprint(dict(zip(keys, values)))"
+  ]
+ },
+ {
+  "_id": "PTA10.3",
+  "title": "根据输入创建字典",
+  "url": "https://xmuoj.com/tc/s/d39fb8bd39c9df3ee087",
+  "crumb": "《公共课 PTA 题库》参考题解 · 第十周 字典1",
+  "secs": [
+   "原题",
+   "归纳",
+   "参考代码（Python3 · 带注释）",
+   "另一种写法"
+  ],
+  "codes": [
+   "import sys\n\nd = {}\nfor line in sys.stdin:\n    line = line.rstrip(\"\\n\")\n    if not line.strip():\n        break\n    country, capital = line.split(\";\")\n    d[country] = capital\nprint(d)",
+   "# 先把整份输入读进来，再按空行切段，省得在循环里判断退出\nimport sys\n\ntext = sys.stdin.read()\nblock = text.split(\"\\n\\n\")[0].strip().split(\"\\n\")\nd = {}\nfor line in block:\n    if line.strip():\n        k, v = line.split(\";\")\n        d[k] = v\nprint(d)"
+  ]
+ },
+ {
+  "_id": "PTA10.4",
+  "title": "三种语言的单词转换",
+  "url": "https://xmuoj.com/tc/s/10a2f8806cc2a718e9a2",
+  "crumb": "《公共课 PTA 题库》参考题解 · 第十周 字典1",
+  "secs": [
+   "原题",
+   "归纳",
+   "参考代码（Python3 · 带注释）",
+   "另一种写法"
+  ],
+  "codes": [
+   "import sys\n\nblocks, cur = [], []\nfor line in sys.stdin:\n    s = line.strip()\n    if not s:\n        if cur:\n            blocks.append(cur)\n            cur = []\n        continue\n    cur.append(s)\nif cur:\n    blocks.append(cur)\n\ncn2en, en2dk = {}, {}\nfor line in blocks[0]:\n    cn, en = line.split()\n    cn2en[cn] = en\nfor line in blocks[1]:\n    en, dk = line.split()\n    en2dk[en] = dk\n\nword = blocks[2][0]\nen = cn2en.get(word)\nprint(en2dk.get(en, \"查无此词\") if en else \"查无此词\")",
+   "# 把「若干行两列」抽成一个建字典的小函数，两段各调一次\nimport sys\n\n\ndef to_dict(lines):\n    return dict(line.split() for line in lines)\n\n\nblocks, cur = [], []\nfor line in sys.stdin:\n    s = line.strip()\n    if not s:\n        if cur:\n            blocks.append(cur)\n            cur = []\n        continue\n    cur.append(s)\nif cur:\n    blocks.append(cur)\n\ncn2en = to_dict(blocks[0])\nen2dk = to_dict(blocks[1])\nword = blocks[2][0]\ntry:\n    print(en2dk[cn2en[word]])\nexcept KeyError:\n    print(\"查无此词\")"
+  ]
+ },
+ {
+  "_id": "PTA10.5",
+  "title": "公交线路的起终点查询",
+  "url": "https://xmuoj.com/tc/s/d23c83a421a0f5c93320",
+  "crumb": "《公共课 PTA 题库》参考题解 · 第十周 字典1",
+  "secs": [
+   "原题",
+   "归纳",
+   "参考代码（Python3 · 带注释）",
+   "另一种写法"
+  ],
+  "codes": [
+   "dict1 = {\"1路\": \"火车站-厦大\", \"2路\": \"厦大-海沧\", \"快1\": \"轮渡-会展中心\"}\nname = input().strip()\nif name in dict1:\n    print(dict1[name])\nelse:\n    print(\"输入错误，无此线路\")",
+   "# dict.get(键, 默认值)：查不到时直接返回默认值，省掉 if-else\ndict1 = {\"1路\": \"火车站-厦大\", \"2路\": \"厦大-海沧\", \"快1\": \"轮渡-会展中心\"}\nprint(dict1.get(input().strip(), \"输入错误，无此线路\"))"
+  ]
+ },
+ {
+  "_id": "PTA10.6",
+  "title": "人口字典中查找城市",
+  "url": "https://xmuoj.com/tc/s/e35af3a088a0c705b39d",
+  "crumb": "《公共课 PTA 题库》参考题解 · 第十周 字典1",
+  "secs": [
+   "原题",
+   "归纳",
+   "参考代码（Python3 · 带注释）",
+   "另一种写法"
+  ],
+  "codes": [
+   "population = {\"重庆\": 3212, \"合肥\": 570.2, \"遵义\": 612.7, \"苏州\": 1295,\n              \"福州\": 710.1, \"南昌\": 536, \"厦门\": 261.1, \"成都\": 1500.1}\nn = int(input())\nfor city in population:\n    if population[city] > n:\n        print(city, end=\" \")\nprint()",
+   "# 先用列表推导式收集城市，再一次性拼成一串输出\npopulation = {\"重庆\": 3212, \"合肥\": 570.2, \"遵义\": 612.7, \"苏州\": 1295,\n              \"福州\": 710.1, \"南昌\": 536, \"厦门\": 261.1, \"成都\": 1500.1}\nn = int(input())\nprint(\"\".join(c + \" \" for c in population if population[c] > n))"
+  ]
+ },
+ {
+  "_id": "PTA10.7",
+  "title": "字典的逆向查询之二",
+  "url": "https://xmuoj.com/tc/s/825f0668bbef23e95740",
+  "crumb": "《公共课 PTA 题库》参考题解 · 第十周 字典1",
+  "secs": [
+   "原题",
+   "归纳",
+   "参考代码（Python3 · 带注释）",
+   "另一种写法"
+  ],
+  "codes": [
+   "import sys\n\nblocks, cur = [], []\nfor line in sys.stdin:\n    s = line.strip()\n    if not s:\n        if cur:\n            blocks.append(cur)\n            cur = []\n        continue\n    cur.append(s)\nif cur:\n    blocks.append(cur)\n\nname2ids = {}\nfor line in blocks[0]:\n    sid, name = line.split(\";\")\n    name2ids.setdefault(name, []).append(sid)\n\nprint(\"\\n\".join(name2ids.get(blocks[1][0], [\"查无此名\"])))",
+   "# 照题面的提示：第一趟数出每个人出现几次，第二趟再把匹配的学号按原顺序打出来\nimport sys\n\nrows = [l.strip() for l in sys.stdin.read().splitlines()]\ncut = rows.index(\"\")                       # 第一个空行把数据段和查询分开\npairs = [r for r in rows[:cut] if r]\nquery = next(r for r in rows[cut:] if r)\n\ncount = {}\nfor r in pairs:\n    name = r.split(\";\")[1]\n    count[name] = count.get(name, 0) + 1\n\nif count.get(query, 0) == 0:\n    print(\"查无此名\")\nelse:\n    for r in pairs:\n        sid, name = r.split(\";\")\n        if name == query:\n            print(sid)"
+  ]
+ },
+ {
+  "_id": "PTA10.8",
+  "title": "输出经过的公交线路",
+  "url": "https://xmuoj.com/tc/s/a1086ed68113b8316cbd",
+  "crumb": "《公共课 PTA 题库》参考题解 · 第十周 字典1",
+  "secs": [
+   "原题",
+   "归纳",
+   "参考代码（Python3 · 带注释）",
+   "另一种写法"
+  ],
+  "codes": [
+   "dict1 = {\"1路\": \"火车站-厦大\", \"2路\": \"厦大-海沧\", \"快1\": \"轮渡-会展中心\",\n         \"92路\": \"软件园-厦大\", \"101路\": \"东渡-会展中心\", \"855路\": \"会展中心-海沧\"}\nstation = input().strip()\nres = []\nfor route in dict1:\n    start, end = dict1[route].split(\"-\")\n    if station == start or station == end:\n        res.append(route)\nprint(res if res else \"无可选的线路\")",
+   "# 一行挑出所有经过该站的线路：把线路的起终点拆成列表再判断站名在不在\ndict1 = {\"1路\": \"火车站-厦大\", \"2路\": \"厦大-海沧\", \"快1\": \"轮渡-会展中心\",\n         \"92路\": \"软件园-厦大\", \"101路\": \"东渡-会展中心\", \"855路\": \"会展中心-海沧\"}\nstation = input().strip()\nroutes = [r for r, ends in dict1.items() if station in ends.split(\"-\")]\nprint(routes or \"无可选的线路\")"
+  ]
+ },
+ {
+  "_id": "PTA10.9",
+  "title": "成绩等级统计",
+  "url": "https://xmuoj.com/tc/s/bda72a049ef538aa53da",
+  "crumb": "《公共课 PTA 题库》参考题解 · 第十周 字典1",
+  "secs": [
+   "原题",
+   "归纳",
+   "参考代码（Python3 · 带注释）",
+   "另一种写法"
+  ],
+  "codes": [
+   "import sys\n\nlevels = \"ABCDEF\"\nids = {lv: [] for lv in levels}\nfor line in sys.stdin:\n    s = line.strip()\n    if s == \"#\":\n        break\n    sid, lv = s.split()\n    ids[lv].append(sid)\n\nfor lv in levels:\n    print(f\"等级{lv}: {len(ids[lv])}人\")\n    if ids[lv]:\n        print(\"   分别是：\" + \"\".join(\"  \" + sid for sid in ids[lv]) + \"  \")",
+   "# 六个等级固定输出一遍：先算好每个人的位置，再按模板拼每一行\nimport sys\n\ngrades = {lv: [] for lv in \"ABCDEF\"}\nfor line in sys.stdin.read().splitlines():\n    line = line.strip()\n    if line == \"#\":\n        break\n    if line:\n        sid, lv = line.split()\n        grades[lv].append(sid)\n\nout = []\nfor lv in \"ABCDEF\":\n    out.append(\"等级%s: %d人\" % (lv, len(grades[lv])))\n    if grades[lv]:\n        out.append(\"   分别是：\" + \"\".join(\"  %s\" % sid for sid in grades[lv]) + \"  \")\nprint(\"\\n\".join(out))"
+  ]
+ }
+]

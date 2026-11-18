@@ -60,6 +60,42 @@ for lab in sorted(labs, key=lambda x: list(CN).index(x.replace('实验', ''))):
       <span class="t">{LAB_NAME.get(lab, '')}<span class="sub">题解 {cnt}</span></span>
       <span class="vc"></span></summary><div class="eps">{rows}</div></details>''')
 
+
+# ---------- Python 面向对象编程实验（4 个实验）----------
+LABS = [
+    dict(no='实验一', name='图书馆管理系统', ch='第 7 章 类',
+         points='类设计 · 封装 · 职责划分 · 借还规则 · 逾期罚金',
+         pdf='Lab1_实验指导书.pdf', code='EXP1.1–1.3',
+         test='https://lnt.xmu.edu.cn/course/111920/content#/', exps=('exp11','exp12','exp13')),
+    dict(no='实验二', name='JSON 文件存储', ch='第 8 章 文件和异常',
+         points='json 读写 · with 与编码 · 异常容错 · 校验与去重',
+         pdf='Lab2_实验指导书.pdf', code='EXP2.1–2.3',
+         test='https://lnt.xmu.edu.cn/course/111920/content#/', exps=('exp21','exp22','exp23')),
+    dict(no='实验三', name='网页数据抓取', ch='第 9 章 网络爬虫',
+         points='HTTP 与重试 · 正则解析 HTML · 数据清洗 · 爬虫礼仪',
+         pdf='Lab3_实验指导书.pdf', code='EXP3.1–3.3',
+         test='https://lnt.xmu.edu.cn/course/111920/content#/', exps=('exp31','exp32','exp33')),
+    dict(no='实验四', name='Numpy 数据分类', ch='第 10 章 Numpy',
+         points='数组运算 · 特征归一化 · KNN 投票 · 准确率与混淆矩阵',
+         pdf='Lab4_实验指导书.pdf', code='EXP4.1–4.4',
+         test='https://lnt.xmu.edu.cn/course/111920/content#/', exps=('exp41','exp42','exp43','exp44')),
+]
+BY_CODE = {e['code']: e for e in D['oop']['eps']}
+
+cards_oop = []
+for lb in LABS:
+    rows = ''.join(link(BY_CODE[c], BY_CODE[c]['title'].split('】')[1].split('｜')[0])
+                   for c in lb['exps'] if c in BY_CODE)
+    cards_oop.append(f'''<details class="card"><summary>
+      <span class="no">{lb['no']}</span>
+      <span class="t">{lb['name']}<span class="sub">{lb['ch']} · {lb['points']}</span></span>
+      <span class="vc"></span></summary><div class="eps">
+      <a class="ep" href="assets/labs/{lb['pdf']}" target="_blank" rel="noopener">📘 实验指导书 PDF</a>
+      <a class="ep" href="https://xmuoj.com/contest/494" target="_blank" rel="noopener">💻 编程题 {lb['code']}</a>
+      <a class="ep" href="https://xmuoj.com/PixelTyper/" target="_blank" rel="noopener">⌨️ PixelTyper 打字关</a>
+      <a class="ep" href="{lb['test']}" target="_blank" rel="noopener">📝 课程小测（LNT）</a>
+      {rows}</div></details>''')
+
 # ---------- 期中串讲 + 函数串讲 ----------
 qz = ''.join(link(e) for e in D['qizhong']['eps'])
 hs = ''.join(link(e) for e in D['tjjj']['eps'] if '函数串讲' in e['title'])
@@ -111,13 +147,13 @@ a.ep b{{color:#b5502a;font-weight:600}}
 .dur{{color:#6b5f49;margin-left:6px}}
 </style></head><body><main>
 <header>
-  <div class="kicker">PYTHON COURSE · 勇者讲义系列 ｜ 课程讲义 10 章 · 实验题解 8 套 · 期中串讲</div>
+  <div class="kicker">PYTHON COURSE · 勇者讲义系列 ｜ 课程讲义 10 章 · 实验题解 8 套 · 面向对象实验 4 个 · 期中串讲</div>
   <h1>Python 程序设计 · 课程导览</h1>
   <p class="lead">🎬 B站合集直达：
   <a href="{SS}9361217" target="_blank" rel="noopener">《Python 专业课讲义》</a> ·
   <a href="{SS}9321748" target="_blank" rel="noopener">《Python 语法课 · 实验题解》</a> ·
-  <a href="{SS}9461078" target="_blank" rel="noopener">《Python 期中串讲》</a></p>
-  <p class="lead">📚 刷题直达：<a class="ep" style="display:inline-block" href="https://xmuoj.com/contest/493" target="_blank" rel="noopener"><b>Python 语法题库</b> 公共课实验一~七 · 126 题</a></p>
+  <a href="{SS}9461078" target="_blank" rel="noopener">《Python 期中串讲》</a> ·
+  <a href="{SS}9600313" target="_blank" rel="noopener">《Python面向对象编程实验》</a></p>
   <div class="sprites"><img class="h" src="assets/hero.svg"><img class="v" src="assets/vera.svg"></div>
 </header>
 
@@ -133,11 +169,13 @@ a.ep b{{color:#b5502a;font-weight:600}}
 <h2>实验题解<small>XMUOJ 实验 0–七 · {len(D['shiyan']['eps'])-7} 道题 · P=例题 T=习题</small></h2>
 {''.join(cards_sy)}
 
-<h2>刷题 · 题库<small>公共课实验一~七 · 126 题 · 可直接提交</small></h2>
-<details class="card" open><summary>
-  <span class="no">题库</span>
-  <span class="t">Python 语法题库<span class="sub">按实验一~七 / 例题·习题顺序编排 · 126 题</span></span>
-  <span class="vc"></span></summary><div class="eps"><a class="ep" style="display:inline-block" href="https://xmuoj.com/contest/493" target="_blank" rel="noopener"><b>直达</b> Python 语法题库</a></div></details>
+
+<h2>Python 面向对象编程实验<small>4 个实验 · 讲义 PDF + 题解视频 + 小测 + 编程题</small></h2>
+<p class="lead" style="margin:0 0 12px">四个实验串成一条流水线：<b>类</b>（图书馆系统）→ <b>文件</b>（JSON 存储）→
+<b>爬虫</b>（网页抓取）→ <b>Numpy</b>（KNN 分类）。<br>
+实验二录入的 data.json → 实验三抓取合并 → 实验四标注训练测试 → KNN 分类报准确率；
+所以<b>只需提交一次代码</b>（实验四大综合工程）。</p>
+{''.join(cards_oop)}
 
 <h2>期中串讲<small>考前压缩饼干 · 先过套路再刷题</small></h2>
 <details class="card" open><summary>
